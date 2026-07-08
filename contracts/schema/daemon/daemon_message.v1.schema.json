@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.example.invalid/ulk/daemon/daemon_message.v1.schema.json",
+  "title": "Daemon Message",
+  "type": "object",
+  "required": ["schema", "message_type"],
+  "properties": {
+    "schema": { "const": "ulk.daemon_message.v1" },
+    "message_type": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": true
+}

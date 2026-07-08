@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.example.invalid/ulk/command/command_response.v1.schema.json",
+  "title": "Command Response",
+  "type": "object",
+  "required": ["schema", "status"],
+  "properties": {
+    "schema": { "const": "ulk.command_response.v1" },
+    "status": { "type": "string" },
+    "payload": { "type": "object" },
+    "error": { "type": ["object", "null"] }
+  },
+  "additionalProperties": false
+}

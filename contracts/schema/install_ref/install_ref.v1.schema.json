@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.example.invalid/ulk/install_ref/install_ref.v1.schema.json",
+  "title": "Install Reference",
+  "type": "object",
+  "required": ["schema", "install_id", "product_id"],
+  "properties": {
+    "schema": { "const": "ulk.install_ref.v1" },
+    "install_id": { "type": "string", "minLength": 1 },
+    "product_id": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": true
+}

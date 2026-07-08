@@ -1,0 +1,3 @@
+# macOS
+
+macOS platform adapter.

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.example.invalid/ulk/diagnostic/diagnostic_report.v1.schema.json",
+  "title": "Diagnostic Report",
+  "type": "object",
+  "required": ["schema", "report_id"],
+  "properties": {
+    "schema": { "const": "ulk.diagnostic_report.v1" },
+    "report_id": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": true
+}

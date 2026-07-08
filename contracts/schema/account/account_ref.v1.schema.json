@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.example.invalid/ulk/account/account_ref.v1.schema.json",
+  "title": "Account Reference",
+  "type": "object",
+  "required": ["schema", "account_id"],
+  "properties": {
+    "schema": { "const": "ulk.account_ref.v1" },
+    "account_id": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.example.invalid/ulk/instance/instance.v1.schema.json",
+  "title": "Instance",
+  "type": "object",
+  "required": ["schema", "instance_id", "product_id"],
+  "properties": {
+    "schema": { "const": "ulk.instance.v1" },
+    "instance_id": { "type": "string", "minLength": 1 },
+    "product_id": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": true
+}

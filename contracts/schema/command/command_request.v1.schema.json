@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.example.invalid/ulk/command/command_request.v1.schema.json",
+  "title": "Command Request",
+  "type": "object",
+  "required": ["schema", "command", "payload"],
+  "properties": {
+    "schema": { "const": "ulk.command_request.v1" },
+    "command": { "type": "string", "minLength": 1 },
+    "payload": { "type": "object" },
+    "dry_run": { "type": "boolean", "default": true }
+  },
+  "additionalProperties": false
+}

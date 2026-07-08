@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.example.invalid/ulk/launch_plan/launch_plan.v1.schema.json",
+  "title": "Launch Plan",
+  "type": "object",
+  "required": ["schema", "plan_id", "dry_run"],
+  "properties": {
+    "schema": { "const": "ulk.launch_plan.v1" },
+    "plan_id": { "type": "string", "minLength": 1 },
+    "dry_run": { "type": "boolean" }
+  },
+  "additionalProperties": true
+}
