@@ -100,17 +100,17 @@ static ulk_static_response ulk_dispatch_command(const ulk_command_request_v1* re
     static const char artifact_sets_payload[] =
         "{\"schema\":\"ulk.command_response.v1\",\"status\":\"ok\",\"payload\":{\"schema\":\"ulk.artifact_sets.v1\",\"artifact_sets\":[],\"model\":\"ulk.artifact_set.v1\"},\"error\":null}";
     static const char launch_plan_dry_run_payload[] =
-        "{\"schema\":\"ulk.command_response.v1\",\"status\":\"ok\",\"payload\":{\"schema\":\"ulk.launch_plan.v1\",\"plan_id\":\"ulk.plan.dry_run\",\"dry_run\":true,\"product_id\":\"universal.default\",\"install_ref\":null,\"instance\":null,\"profile\":null,\"account_ref\":null,\"artifact_set\":null,\"steps\":[],\"execution\":\"not_started\"},\"error\":null}";
+        "{\"schema\":\"ulk.command_response.v1\",\"status\":\"ok\",\"payload\":{\"schema\":\"ulk.launch_plan.v1\",\"plan_id\":\"ulk.plan.dry_run\",\"dry_run\":true,\"product_id\":\"universal.default\",\"install_ref\":null,\"instance\":null,\"profile\":null,\"account_ref\":null,\"artifact_set\":null,\"argv\":[],\"preflight\":[],\"steps\":[],\"execution\":\"not_started\"},\"error\":null}";
     static const char launch_plan_execute_payload[] =
-        "{\"schema\":\"ulk.command_response.v1\",\"status\":\"ok\",\"payload\":{\"schema\":\"ulk.launch_plan.v1\",\"plan_id\":\"ulk.plan.preview\",\"dry_run\":false,\"product_id\":\"universal.default\",\"install_ref\":null,\"instance\":null,\"profile\":null,\"account_ref\":null,\"artifact_set\":null,\"steps\":[],\"execution\":\"requires_product_binding\"},\"error\":null}";
+        "{\"schema\":\"ulk.command_response.v1\",\"status\":\"ok\",\"payload\":{\"schema\":\"ulk.launch_plan.v1\",\"plan_id\":\"ulk.plan.preview\",\"dry_run\":false,\"product_id\":\"universal.default\",\"install_ref\":null,\"instance\":null,\"profile\":null,\"account_ref\":null,\"artifact_set\":null,\"argv\":[],\"preflight\":[],\"steps\":[],\"execution\":\"requires_product_binding\"},\"error\":null}";
     static const char diagnostics_payload[] =
         "{\"schema\":\"ulk.command_response.v1\",\"status\":\"ok\",\"payload\":{\"schema\":\"ulk.diagnostic_report.v1\",\"report_id\":\"ulk.diagnostic.minimal\",\"status\":\"ok\",\"checks\":[{\"id\":\"command_graph\",\"status\":\"ok\"},{\"id\":\"product_registry\",\"status\":\"empty\"},{\"id\":\"setup_mutation\",\"status\":\"not_owned\"}]},\"error\":null}";
     static const char instance_create_refusal_message[] =
         "instance creation requires a product binding and workspace store";
     static const char unsupported_payload[] =
-        "{\"schema\":\"ulk.command_response.v1\",\"status\":\"unsupported\",\"payload\":null,\"error\":{\"code\":\"unsupported_command\",\"message\":\"command is not implemented by the minimal universal launcher graph\"}}";
+        "{\"schema\":\"ulk.command_response.v1\",\"status\":\"unsupported\",\"payload\":null,\"error\":{\"code\":\"unsupported_command\",\"message\":\"Command is not supported by the Universal Launcher command graph\"}}";
     static const char unsupported_message[] =
-        "command is not implemented by the minimal universal launcher graph";
+        "Command is not supported by the Universal Launcher command graph";
     ulk_static_response result;
 
     result.status = ULK_STATUS_OK;
@@ -216,8 +216,8 @@ int ulk_command_execute_v1(
 )
 {
     static const char invalid_payload[] =
-        "{\"schema\":\"ulk.command_response.v1\",\"status\":\"invalid_argument\",\"payload\":null,\"error\":{\"code\":\"invalid_argument\",\"message\":\"command request is invalid\"}}";
-    static const char invalid_message[] = "command request is invalid";
+        "{\"schema\":\"ulk.command_response.v1\",\"status\":\"invalid_argument\",\"payload\":null,\"error\":{\"code\":\"invalid_argument\",\"message\":\"Universal Launcher command request is invalid\"}}";
+    static const char invalid_message[] = "Universal Launcher command request is invalid";
     ulk_static_response dispatched;
 
     (void)context;
