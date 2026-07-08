@@ -136,6 +136,9 @@ def check_required_paths() -> list[str]:
         ROOT / "contracts" / "schema" / "artifact_set" / "artifact_set.v1.schema.json",
         ROOT / "contracts" / "schema" / "launch_plan" / "launch_plan.v1.schema.json",
         ROOT / "docs" / "architecture" / "boundary.md",
+        ROOT / "docs" / "architecture" / "ecosystem_vision.md",
+        ROOT / "docs" / "architecture" / "root_grammar.md",
+        ROOT / "docs" / "roadmap.md",
     ]
     return [f"missing required path {path.relative_to(ROOT)}" for path in required if not path.exists()]
 

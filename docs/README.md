@@ -1,8 +1,10 @@
 # Documentation
 
 - [Architecture](architecture/overview.md)
+- [Ecosystem Vision](architecture/ecosystem_vision.md)
 - [Boundary](architecture/boundary.md)
 - [Directory Structure](architecture/directory_structure.md)
+- [Root Grammar](architecture/root_grammar.md)
 - [Command Graph](architecture/command_graph.md)
 - [Module Graph](architecture/module_graph.md)
 - [Data Flow](architecture/data_flow.md)
@@ -13,3 +15,4 @@
 - [Artifact Set Model](architecture/artifact_set_model.md)
 - [Launch Plan Model](architecture/launch_plan_model.md)
 - [Setup Handoff](architecture/setup_handoff.md)
+- [Roadmap](roadmap.md)

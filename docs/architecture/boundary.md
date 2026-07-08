@@ -19,6 +19,9 @@ Universal Launcher does not own setup mutation. Universal Setup owns install,
 verify, repair, uninstall, stage, commit, rollback, and installed-state
 manifests.
 
+It also must not absorb Universal Setup. The two systems share contracts, but
+launcher owns runnable state while setup owns installed software state.
+
 Universal Launcher does not own Factorio semantics. Factorio discovery,
 validation, launch templates, mods, modsets, saves, servers, Mod Portal rules,
 and account redaction belong to `factorio-launcher`.

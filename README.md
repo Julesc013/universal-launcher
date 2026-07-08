@@ -8,14 +8,38 @@ clients.
 It does not install, repair, uninstall, or roll back products. Those operations
 belong to Universal Setup. It also does not contain Factorio-specific discovery,
 mods, saves, servers, launch templates, Mod Portal behavior, or account rules.
-Those belong to product bindings such as `factorio-launcher`.
+Those belong to product bindings such as FacMan in `factorio-launcher`.
 
 ## Ownership
 
 ```text
 universal-setup     install / repair / uninstall / rollback authority
 universal-launcher  cross-product orchestration and launch plans
-factorio-launcher   Factorio product binding and app frontends
+factorio-launcher   FacMan product binding and app frontends
+```
+
+## Proof Role
+
+```text
+Factorio proves the universal launcher through FacMan.
+Dominium proves the universal setup.
+FacMan ships as the first serious Factorio product binding.
+```
+
+Universal Launcher should become real by supporting FacMan's Factorio
+instances, profiles, artifact sets, launch plans, diagnostics, and command
+graph. It should stay product-neutral while FacMan supplies Factorio-specific
+facts.
+
+Permanent rule:
+
+```text
+Universal setup mutates installed software state.
+Universal launcher orchestrates runnable product state.
+Product bindings interpret product-specific facts.
+Frontends present commands and reports.
+Contracts preserve compatibility.
+Validators prevent regression.
 ```
 
 ## Durable Layout
