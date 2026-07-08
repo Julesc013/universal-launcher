@@ -1,0 +1,10 @@
+command_id = "launch_plan.build"
+owner = "universal-launcher"
+effects = ["workspace_read"]
+request_schema = "contracts/schema/command/command_request.v1.schema.json"
+response_schema = "contracts/schema/command/command_response.v1.schema.json"
+result_schema = "contracts/result/result.v1.schema.json"
+refusal_schema = "contracts/refusal/refusal.v1.schema.json"
+dry_run_behavior = "Builds a preview launch plan. Minimal kernel returns empty argv and preflight arrays until a product binding supplies facts."
+refusal_codes = ["invalid_argument", "product_binding_required"]
+cli_mapping_later = "facman launch plan <instance-id> --json"

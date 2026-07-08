@@ -1,0 +1,10 @@
+command_id = "install_refs.list"
+owner = "universal-launcher"
+effects = ["workspace_read"]
+request_schema = "contracts/schema/command/command_request.v1.schema.json"
+response_schema = "contracts/schema/command/command_response.v1.schema.json"
+result_schema = "contracts/result/result.v1.schema.json"
+refusal_schema = "contracts/refusal/refusal.v1.schema.json"
+dry_run_behavior = "Read-only. Returns currently registered install references, empty in the minimal kernel."
+refusal_codes = ["invalid_argument"]
+cli_mapping_later = "facman installs refs --json"

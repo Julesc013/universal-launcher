@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://julesc013.github.io/universal-launcher/contracts/result/result.v1.schema.json",
+  "title": "Universal Launcher Result",
+  "type": "object",
+  "required": ["schema", "status"],
+  "properties": {
+    "schema": { "const": "ulk.result.v1" },
+    "status": { "type": "string" },
+    "payload": { "type": ["object", "array", "string", "number", "boolean", "null"] },
+    "error": { "type": ["object", "null"] }
+  },
+  "additionalProperties": true
+}

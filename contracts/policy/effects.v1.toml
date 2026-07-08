@@ -1,0 +1,8 @@
+[effects]
+none = "No observable read, write, process, network, or setup effect."
+workspace_read = "Reads launcher workspace state, registry state, diagnostics, or filesystem metadata without mutation."
+workspace_write = "Writes launcher workspace state such as instances, profiles, launch history, or audit records."
+process_execute = "Starts or supervises a product or helper process."
+network = "Uses network access."
+setup_preview = "Requests a Universal Setup preview, refusal, or plan without mutation."
+setup_mutation = "Requests Universal Setup install, repair, uninstall, rollback, or other mutation."
