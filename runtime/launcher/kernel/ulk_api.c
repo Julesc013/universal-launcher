@@ -80,13 +80,19 @@ static void ulk_set_response(
 static ulk_static_response ulk_dispatch_command(const ulk_command_request_v1* request)
 {
     static const char command_graph_payload[] =
-        "{\"schema\":\"ulk.command_response.v1\",\"status\":\"ok\",\"payload\":{\"schema\":\"ulk.command_graph.v1\",\"commands\":[{\"command\":\"product.inspect\",\"request_schema\":\"ulk.command_request.v1\",\"response_schema\":\"ulk.command_response.v1\",\"dry_run\":true},{\"command\":\"install_refs.list\",\"request_schema\":\"ulk.command_request.v1\",\"response_schema\":\"ulk.command_response.v1\",\"dry_run\":true},{\"command\":\"instances.list\",\"request_schema\":\"ulk.command_request.v1\",\"response_schema\":\"ulk.command_response.v1\",\"dry_run\":true},{\"command\":\"profiles.list\",\"request_schema\":\"ulk.command_request.v1\",\"response_schema\":\"ulk.command_response.v1\",\"dry_run\":true},{\"command\":\"account_refs.list\",\"request_schema\":\"ulk.command_request.v1\",\"response_schema\":\"ulk.command_response.v1\",\"dry_run\":true},{\"command\":\"artifact_sets.list\",\"request_schema\":\"ulk.command_request.v1\",\"response_schema\":\"ulk.command_response.v1\",\"dry_run\":true},{\"command\":\"launch_plan.build\",\"request_schema\":\"ulk.command_request.v1\",\"response_schema\":\"ulk.command_response.v1\",\"dry_run\":true},{\"command\":\"diagnostics.report\",\"request_schema\":\"ulk.command_request.v1\",\"response_schema\":\"ulk.command_response.v1\",\"dry_run\":true}]},\"error\":null}";
+        "{\"schema\":\"ulk.command_response.v1\",\"status\":\"ok\",\"payload\":{\"schema\":\"ulk.command_graph.v1\",\"commands\":[{\"command\":\"product.inspect\",\"request_schema\":\"ulk.command_request.v1\",\"response_schema\":\"ulk.command_response.v1\",\"dry_run\":true,\"effects\":[\"none\"]},{\"command\":\"install_refs.list\",\"request_schema\":\"ulk.command_request.v1\",\"response_schema\":\"ulk.command_response.v1\",\"dry_run\":true,\"effects\":[\"workspace_read\"]},{\"command\":\"install_refs.inspect\",\"request_schema\":\"ulk.command_request.v1\",\"response_schema\":\"ulk.command_response.v1\",\"dry_run\":true,\"effects\":[\"workspace_read\"]},{\"command\":\"instance.create\",\"request_schema\":\"ulk.command_request.v1\",\"response_schema\":\"ulk.command_response.v1\",\"dry_run\":true,\"effects\":[\"workspace_write\"]},{\"command\":\"instance.list\",\"request_schema\":\"ulk.command_request.v1\",\"response_schema\":\"ulk.command_response.v1\",\"dry_run\":true,\"effects\":[\"workspace_read\"]},{\"command\":\"launch_plan.build\",\"request_schema\":\"ulk.command_request.v1\",\"response_schema\":\"ulk.command_response.v1\",\"dry_run\":true,\"effects\":[\"workspace_read\"]},{\"command\":\"diagnostics.run\",\"request_schema\":\"ulk.command_request.v1\",\"response_schema\":\"ulk.command_response.v1\",\"dry_run\":true,\"effects\":[\"none\"]},{\"command\":\"profiles.list\",\"request_schema\":\"ulk.command_request.v1\",\"response_schema\":\"ulk.command_response.v1\",\"dry_run\":true,\"effects\":[\"workspace_read\"]},{\"command\":\"account_refs.list\",\"request_schema\":\"ulk.command_request.v1\",\"response_schema\":\"ulk.command_response.v1\",\"dry_run\":true,\"effects\":[\"workspace_read\"]},{\"command\":\"artifact_sets.list\",\"request_schema\":\"ulk.command_request.v1\",\"response_schema\":\"ulk.command_response.v1\",\"dry_run\":true,\"effects\":[\"workspace_read\"]},{\"command\":\"instances.list\",\"alias_for\":\"instance.list\",\"request_schema\":\"ulk.command_request.v1\",\"response_schema\":\"ulk.command_response.v1\",\"dry_run\":true,\"effects\":[\"workspace_read\"]},{\"command\":\"diagnostics.report\",\"alias_for\":\"diagnostics.run\",\"request_schema\":\"ulk.command_request.v1\",\"response_schema\":\"ulk.command_response.v1\",\"dry_run\":true,\"effects\":[\"none\"]}]},\"error\":null}";
     static const char product_payload[] =
         "{\"schema\":\"ulk.command_response.v1\",\"status\":\"ok\",\"payload\":{\"schema\":\"ulk.product.v1\",\"product_id\":\"universal.default\",\"binding_id\":\"external.product_binding\",\"registry_status\":\"empty\",\"models\":{\"install_ref\":\"ulk.install_ref.v1\",\"instance\":\"ulk.instance.v1\",\"profile\":\"ulk.profile.v1\",\"account_ref\":\"ulk.account_ref.v1\",\"artifact_set\":\"ulk.artifact_set.v1\",\"launch_plan\":\"ulk.launch_plan.v1\",\"diagnostic_report\":\"ulk.diagnostic_report.v1\"}},\"error\":null}";
     static const char install_refs_payload[] =
         "{\"schema\":\"ulk.command_response.v1\",\"status\":\"ok\",\"payload\":{\"schema\":\"ulk.install_refs.v1\",\"install_refs\":[],\"model\":\"ulk.install_ref.v1\"},\"error\":null}";
+    static const char install_ref_inspect_payload[] =
+        "{\"schema\":\"ulk.command_response.v1\",\"status\":\"ok\",\"payload\":{\"schema\":\"ulk.install_ref_inspect.v1\",\"status\":\"not_found\",\"install_ref\":null,\"registry_status\":\"empty\",\"diagnostics\":[{\"code\":\"empty_registry\",\"message\":\"no install refs are registered in the minimal universal launcher kernel\"}]},\"error\":null}";
     static const char instances_payload[] =
         "{\"schema\":\"ulk.command_response.v1\",\"status\":\"ok\",\"payload\":{\"schema\":\"ulk.instances.v1\",\"instances\":[],\"model\":\"ulk.instance.v1\"},\"error\":null}";
+    static const char instance_create_preview_payload[] =
+        "{\"schema\":\"ulk.command_response.v1\",\"status\":\"ok\",\"payload\":{\"schema\":\"ulk.instance_create_plan.v1\",\"status\":\"planned\",\"dry_run\":true,\"instance\":null,\"effects\":[\"workspace_write\"],\"execution\":\"requires_product_binding\",\"diagnostics\":[{\"code\":\"preview_only\",\"message\":\"minimal universal launcher can plan instance creation but owns no product-specific instance materialization\"}]},\"error\":null}";
+    static const char instance_create_execute_refusal_payload[] =
+        "{\"schema\":\"ulk.command_response.v1\",\"status\":\"refused\",\"payload\":{\"schema\":\"ulk.refusal.v1\",\"operation\":\"instance.create\",\"code\":\"product_binding_required\",\"severity\":\"error\",\"message\":\"instance creation requires a product binding and workspace store\",\"retry_possible\":true,\"suggested_next_command\":\"run the product binding instance creation command\"},\"error\":{\"code\":\"product_binding_required\",\"message\":\"instance creation requires a product binding and workspace store\"}}";
     static const char profiles_payload[] =
         "{\"schema\":\"ulk.command_response.v1\",\"status\":\"ok\",\"payload\":{\"schema\":\"ulk.profiles.v1\",\"profiles\":[],\"model\":\"ulk.profile.v1\"},\"error\":null}";
     static const char account_refs_payload[] =
@@ -99,6 +105,8 @@ static ulk_static_response ulk_dispatch_command(const ulk_command_request_v1* re
         "{\"schema\":\"ulk.command_response.v1\",\"status\":\"ok\",\"payload\":{\"schema\":\"ulk.launch_plan.v1\",\"plan_id\":\"ulk.plan.preview\",\"dry_run\":false,\"product_id\":\"universal.default\",\"install_ref\":null,\"instance\":null,\"profile\":null,\"account_ref\":null,\"artifact_set\":null,\"steps\":[],\"execution\":\"requires_product_binding\"},\"error\":null}";
     static const char diagnostics_payload[] =
         "{\"schema\":\"ulk.command_response.v1\",\"status\":\"ok\",\"payload\":{\"schema\":\"ulk.diagnostic_report.v1\",\"report_id\":\"ulk.diagnostic.minimal\",\"status\":\"ok\",\"checks\":[{\"id\":\"command_graph\",\"status\":\"ok\"},{\"id\":\"product_registry\",\"status\":\"empty\"},{\"id\":\"setup_mutation\",\"status\":\"not_owned\"}]},\"error\":null}";
+    static const char instance_create_refusal_message[] =
+        "instance creation requires a product binding and workspace store";
     static const char unsupported_payload[] =
         "{\"schema\":\"ulk.command_response.v1\",\"status\":\"unsupported\",\"payload\":null,\"error\":{\"code\":\"unsupported_command\",\"message\":\"command is not implemented by the minimal universal launcher graph\"}}";
     static const char unsupported_message[] =
@@ -120,7 +128,22 @@ static ulk_static_response ulk_dispatch_command(const ulk_command_request_v1* re
         result.payload = install_refs_payload;
         return result;
     }
-    if (ulk_string_equals(request->command_name, "instances.list")) {
+    if (ulk_string_equals(request->command_name, "install_refs.inspect")) {
+        result.payload = install_ref_inspect_payload;
+        return result;
+    }
+    if (ulk_string_equals(request->command_name, "instance.create")) {
+        if (request->dry_run) {
+            result.payload = instance_create_preview_payload;
+            return result;
+        }
+        result.status = ULK_STATUS_ERROR;
+        result.payload = instance_create_execute_refusal_payload;
+        result.error_message = instance_create_refusal_message;
+        return result;
+    }
+    if (ulk_string_equals(request->command_name, "instance.list") ||
+        ulk_string_equals(request->command_name, "instances.list")) {
         result.payload = instances_payload;
         return result;
     }
@@ -140,7 +163,8 @@ static ulk_static_response ulk_dispatch_command(const ulk_command_request_v1* re
         result.payload = request->dry_run ? launch_plan_dry_run_payload : launch_plan_execute_payload;
         return result;
     }
-    if (ulk_string_equals(request->command_name, "diagnostics.report")) {
+    if (ulk_string_equals(request->command_name, "diagnostics.run") ||
+        ulk_string_equals(request->command_name, "diagnostics.report")) {
         result.payload = diagnostics_payload;
         return result;
     }

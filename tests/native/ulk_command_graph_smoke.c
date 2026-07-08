@@ -88,26 +88,50 @@ int main(void)
     if (run_command(context, "install_refs.list", 1, "\"install_refs\":[]") != 0) {
         return 22;
     }
-    if (run_command(context, "instances.list", 1, "\"instances\":[]") != 0) {
+    if (run_command(context, "install_refs.inspect", 1, "\"status\":\"not_found\"") != 0) {
         return 23;
     }
-    if (run_command(context, "profiles.list", 1, "\"profiles\":[]") != 0) {
+    if (run_command(context, "instance.create", 1, "\"schema\":\"ulk.instance_create_plan.v1\"") != 0) {
         return 24;
     }
-    if (run_command(context, "account_refs.list", 1, "\"account_refs\":[]") != 0) {
+    memset(&request, 0, sizeof(request));
+    memset(&response, 0, sizeof(response));
+    request.struct_size = sizeof(request);
+    request.command_name = view_from_cstr("instance.create");
+    request.json_payload = view_from_cstr("{}");
+    request.dry_run = 0;
+    status = ulk_command_execute_v1(context, &request, &response);
+    if (status != ULK_STATUS_ERROR ||
+        response.status != ULK_STATUS_ERROR ||
+        !contains(response.json_payload, "\"code\":\"product_binding_required\"")) {
+        return 36;
+    }
+    if (run_command(context, "instance.list", 1, "\"instances\":[]") != 0) {
         return 25;
     }
-    if (run_command(context, "artifact_sets.list", 1, "\"artifact_sets\":[]") != 0) {
+    if (run_command(context, "instances.list", 1, "\"instances\":[]") != 0) {
         return 26;
     }
-    if (run_command(context, "launch_plan.build", 1, "\"dry_run\":true") != 0) {
+    if (run_command(context, "profiles.list", 1, "\"profiles\":[]") != 0) {
         return 27;
     }
-    if (run_command(context, "launch_plan.build", 0, "\"dry_run\":false") != 0) {
+    if (run_command(context, "account_refs.list", 1, "\"account_refs\":[]") != 0) {
         return 28;
     }
-    if (run_command(context, "diagnostics.report", 1, "\"report_id\":\"ulk.diagnostic.minimal\"") != 0) {
+    if (run_command(context, "artifact_sets.list", 1, "\"artifact_sets\":[]") != 0) {
         return 29;
+    }
+    if (run_command(context, "launch_plan.build", 1, "\"dry_run\":true") != 0) {
+        return 32;
+    }
+    if (run_command(context, "launch_plan.build", 0, "\"dry_run\":false") != 0) {
+        return 33;
+    }
+    if (run_command(context, "diagnostics.run", 1, "\"report_id\":\"ulk.diagnostic.minimal\"") != 0) {
+        return 34;
+    }
+    if (run_command(context, "diagnostics.report", 1, "\"report_id\":\"ulk.diagnostic.minimal\"") != 0) {
+        return 35;
     }
 
     memset(&request, 0, sizeof(request));
