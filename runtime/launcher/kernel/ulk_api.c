@@ -8,6 +8,12 @@ struct ulk_context {
     int has_allocator;
 };
 
+typedef struct ulk_static_response {
+    int status;
+    const char* payload;
+    const char* error_message;
+} ulk_static_response;
+
 static void* ulk_default_alloc(void* user, ulk_size size)
 {
     (void)user;
@@ -18,6 +24,131 @@ static void ulk_default_free(void* user, void* ptr)
 {
     (void)user;
     free(ptr);
+}
+
+static int ulk_string_equals(ulk_string_view value, const char* expected)
+{
+    ulk_size index;
+    ulk_size expected_size;
+
+    if (value.data == 0 || expected == 0) {
+        return 0;
+    }
+
+    expected_size = (ulk_size)strlen(expected);
+    if (value.size != expected_size) {
+        return 0;
+    }
+
+    for (index = 0; index < expected_size; ++index) {
+        if (value.data[index] != expected[index]) {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+static void ulk_set_response(
+    ulk_command_response_v1* response,
+    int status,
+    const char* payload,
+    const char* error_message
+)
+{
+    if (response == 0) {
+        return;
+    }
+
+    memset(response, 0, sizeof(*response));
+    response->struct_size = sizeof(*response);
+    response->status = status;
+
+    if (payload != 0) {
+        response->json_payload.data = payload;
+        response->json_payload.size = (ulk_size)strlen(payload);
+    }
+
+    response->error.struct_size = sizeof(response->error);
+    response->error.code = status;
+    if (error_message != 0) {
+        response->error.message.data = error_message;
+        response->error.message.size = (ulk_size)strlen(error_message);
+    }
+}
+
+static ulk_static_response ulk_dispatch_command(const ulk_command_request_v1* request)
+{
+    static const char command_graph_payload[] =
+        "{\"schema\":\"ulk.command_response.v1\",\"status\":\"ok\",\"payload\":{\"schema\":\"ulk.command_graph.v1\",\"commands\":[{\"command\":\"product.inspect\",\"request_schema\":\"ulk.command_request.v1\",\"response_schema\":\"ulk.command_response.v1\",\"dry_run\":true},{\"command\":\"install_refs.list\",\"request_schema\":\"ulk.command_request.v1\",\"response_schema\":\"ulk.command_response.v1\",\"dry_run\":true},{\"command\":\"instances.list\",\"request_schema\":\"ulk.command_request.v1\",\"response_schema\":\"ulk.command_response.v1\",\"dry_run\":true},{\"command\":\"profiles.list\",\"request_schema\":\"ulk.command_request.v1\",\"response_schema\":\"ulk.command_response.v1\",\"dry_run\":true},{\"command\":\"account_refs.list\",\"request_schema\":\"ulk.command_request.v1\",\"response_schema\":\"ulk.command_response.v1\",\"dry_run\":true},{\"command\":\"artifact_sets.list\",\"request_schema\":\"ulk.command_request.v1\",\"response_schema\":\"ulk.command_response.v1\",\"dry_run\":true},{\"command\":\"launch_plan.build\",\"request_schema\":\"ulk.command_request.v1\",\"response_schema\":\"ulk.command_response.v1\",\"dry_run\":true},{\"command\":\"diagnostics.report\",\"request_schema\":\"ulk.command_request.v1\",\"response_schema\":\"ulk.command_response.v1\",\"dry_run\":true}]},\"error\":null}";
+    static const char product_payload[] =
+        "{\"schema\":\"ulk.command_response.v1\",\"status\":\"ok\",\"payload\":{\"schema\":\"ulk.product.v1\",\"product_id\":\"universal.default\",\"binding_id\":\"external.product_binding\",\"registry_status\":\"empty\",\"models\":{\"install_ref\":\"ulk.install_ref.v1\",\"instance\":\"ulk.instance.v1\",\"profile\":\"ulk.profile.v1\",\"account_ref\":\"ulk.account_ref.v1\",\"artifact_set\":\"ulk.artifact_set.v1\",\"launch_plan\":\"ulk.launch_plan.v1\",\"diagnostic_report\":\"ulk.diagnostic_report.v1\"}},\"error\":null}";
+    static const char install_refs_payload[] =
+        "{\"schema\":\"ulk.command_response.v1\",\"status\":\"ok\",\"payload\":{\"schema\":\"ulk.install_refs.v1\",\"install_refs\":[],\"model\":\"ulk.install_ref.v1\"},\"error\":null}";
+    static const char instances_payload[] =
+        "{\"schema\":\"ulk.command_response.v1\",\"status\":\"ok\",\"payload\":{\"schema\":\"ulk.instances.v1\",\"instances\":[],\"model\":\"ulk.instance.v1\"},\"error\":null}";
+    static const char profiles_payload[] =
+        "{\"schema\":\"ulk.command_response.v1\",\"status\":\"ok\",\"payload\":{\"schema\":\"ulk.profiles.v1\",\"profiles\":[],\"model\":\"ulk.profile.v1\"},\"error\":null}";
+    static const char account_refs_payload[] =
+        "{\"schema\":\"ulk.command_response.v1\",\"status\":\"ok\",\"payload\":{\"schema\":\"ulk.account_refs.v1\",\"account_refs\":[],\"model\":\"ulk.account_ref.v1\"},\"error\":null}";
+    static const char artifact_sets_payload[] =
+        "{\"schema\":\"ulk.command_response.v1\",\"status\":\"ok\",\"payload\":{\"schema\":\"ulk.artifact_sets.v1\",\"artifact_sets\":[],\"model\":\"ulk.artifact_set.v1\"},\"error\":null}";
+    static const char launch_plan_dry_run_payload[] =
+        "{\"schema\":\"ulk.command_response.v1\",\"status\":\"ok\",\"payload\":{\"schema\":\"ulk.launch_plan.v1\",\"plan_id\":\"ulk.plan.dry_run\",\"dry_run\":true,\"product_id\":\"universal.default\",\"install_ref\":null,\"instance\":null,\"profile\":null,\"account_ref\":null,\"artifact_set\":null,\"steps\":[],\"execution\":\"not_started\"},\"error\":null}";
+    static const char launch_plan_execute_payload[] =
+        "{\"schema\":\"ulk.command_response.v1\",\"status\":\"ok\",\"payload\":{\"schema\":\"ulk.launch_plan.v1\",\"plan_id\":\"ulk.plan.preview\",\"dry_run\":false,\"product_id\":\"universal.default\",\"install_ref\":null,\"instance\":null,\"profile\":null,\"account_ref\":null,\"artifact_set\":null,\"steps\":[],\"execution\":\"requires_product_binding\"},\"error\":null}";
+    static const char diagnostics_payload[] =
+        "{\"schema\":\"ulk.command_response.v1\",\"status\":\"ok\",\"payload\":{\"schema\":\"ulk.diagnostic_report.v1\",\"report_id\":\"ulk.diagnostic.minimal\",\"status\":\"ok\",\"checks\":[{\"id\":\"command_graph\",\"status\":\"ok\"},{\"id\":\"product_registry\",\"status\":\"empty\"},{\"id\":\"setup_mutation\",\"status\":\"not_owned\"}]},\"error\":null}";
+    static const char unsupported_payload[] =
+        "{\"schema\":\"ulk.command_response.v1\",\"status\":\"unsupported\",\"payload\":null,\"error\":{\"code\":\"unsupported_command\",\"message\":\"command is not implemented by the minimal universal launcher graph\"}}";
+    static const char unsupported_message[] =
+        "command is not implemented by the minimal universal launcher graph";
+    ulk_static_response result;
+
+    result.status = ULK_STATUS_OK;
+    result.error_message = 0;
+
+    if (ulk_string_equals(request->command_name, "command_graph.inspect")) {
+        result.payload = command_graph_payload;
+        return result;
+    }
+    if (ulk_string_equals(request->command_name, "product.inspect")) {
+        result.payload = product_payload;
+        return result;
+    }
+    if (ulk_string_equals(request->command_name, "install_refs.list")) {
+        result.payload = install_refs_payload;
+        return result;
+    }
+    if (ulk_string_equals(request->command_name, "instances.list")) {
+        result.payload = instances_payload;
+        return result;
+    }
+    if (ulk_string_equals(request->command_name, "profiles.list")) {
+        result.payload = profiles_payload;
+        return result;
+    }
+    if (ulk_string_equals(request->command_name, "account_refs.list")) {
+        result.payload = account_refs_payload;
+        return result;
+    }
+    if (ulk_string_equals(request->command_name, "artifact_sets.list")) {
+        result.payload = artifact_sets_payload;
+        return result;
+    }
+    if (ulk_string_equals(request->command_name, "launch_plan.build")) {
+        result.payload = request->dry_run ? launch_plan_dry_run_payload : launch_plan_execute_payload;
+        return result;
+    }
+    if (ulk_string_equals(request->command_name, "diagnostics.report")) {
+        result.payload = diagnostics_payload;
+        return result;
+    }
+
+    result.status = ULK_STATUS_UNSUPPORTED_VERSION;
+    result.payload = unsupported_payload;
+    result.error_message = unsupported_message;
+    return result;
 }
 
 int ulk_context_create_v1(
@@ -60,25 +191,24 @@ int ulk_command_execute_v1(
     ulk_command_response_v1* response
 )
 {
-    static const char payload[] = "{\"status\":\"not_implemented\"}";
-    static const char message[] = "native command graph is not implemented yet";
+    static const char invalid_payload[] =
+        "{\"schema\":\"ulk.command_response.v1\",\"status\":\"invalid_argument\",\"payload\":null,\"error\":{\"code\":\"invalid_argument\",\"message\":\"command request is invalid\"}}";
+    static const char invalid_message[] = "command request is invalid";
+    ulk_static_response dispatched;
 
     (void)context;
-    (void)request;
 
-    if (response != 0) {
-        memset(response, 0, sizeof(*response));
-        response->struct_size = sizeof(*response);
-        response->status = ULK_STATUS_UNSUPPORTED_VERSION;
-        response->json_payload.data = payload;
-        response->json_payload.size = (ulk_size)(sizeof(payload) - 1);
-        response->error.struct_size = sizeof(response->error);
-        response->error.code = ULK_STATUS_UNSUPPORTED_VERSION;
-        response->error.message.data = message;
-        response->error.message.size = (ulk_size)(sizeof(message) - 1);
+    if (request == 0 ||
+        request->struct_size < (ulk_size)sizeof(*request) ||
+        request->command_name.data == 0 ||
+        request->command_name.size == 0) {
+        ulk_set_response(response, ULK_STATUS_INVALID_ARGUMENT, invalid_payload, invalid_message);
+        return ULK_STATUS_INVALID_ARGUMENT;
     }
 
-    return ULK_STATUS_UNSUPPORTED_VERSION;
+    dispatched = ulk_dispatch_command(request);
+    ulk_set_response(response, dispatched.status, dispatched.payload, dispatched.error_message);
+    return dispatched.status;
 }
 
 void ulk_context_destroy_v1(ulk_context* context)

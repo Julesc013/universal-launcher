@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 project(universal_launcher C)
 
 option(ULK_BUILD_APPS "Build Universal Launcher app frontends" ON)
+option(ULK_BUILD_TESTS "Build Universal Launcher native tests" ON)
 
 add_library(ulk_headers INTERFACE)
 target_include_directories(ulk_headers INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include")
@@ -14,3 +15,10 @@ target_include_directories(ulk_shared PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/includ
 set_target_properties(ulk_shared PROPERTIES OUTPUT_NAME ulk WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 add_library(ulk ALIAS ulk_static)
+
+if(ULK_BUILD_TESTS)
+  enable_testing()
+  add_executable(ulk_command_graph_smoke tests/native/ulk_command_graph_smoke.c)
+  target_link_libraries(ulk_command_graph_smoke PRIVATE ulk_static)
+  add_test(NAME ulk_command_graph_smoke COMMAND ulk_command_graph_smoke)
+endif()
