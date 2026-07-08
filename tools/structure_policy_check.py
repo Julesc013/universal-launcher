@@ -25,26 +25,43 @@ ALLOWED_TOP_LEVEL = {
 
 IGNORED_TOP_LEVEL = {".git", "__pycache__", ".pytest_cache", "build", "dist", "out", "bin", "obj"}
 RETIRED_ROOTS = {"core", "data", "factorio", "packages", "packaging", "schema", "schemas", "setup", "source", "src", "ui"}
-ALLOWED_RUNTIME_ROOTS = {"base", "client", "daemon", "launcher", "platform"}
+ALLOWED_RUNTIME_ROOTS = {"base", "binding", "client", "daemon", "launcher", "platform"}
 ALLOWED_LAUNCHER_MODULES = {
     "account",
+    "artifact_set",
     "audit",
     "command",
+    "compatibility",
+    "discovery",
     "diagnostics",
+    "export",
     "install_ref",
     "instance",
     "kernel",
-    "launch",
     "launch_plan",
     "product",
     "profile",
 }
 ALLOWED_CONTRACT_ROOTS = {"abi", "command", "diagnostic", "policy", "refusal", "result", "schema"}
-ALLOWED_SCHEMA_ROOTS = {"account", "command", "common", "daemon", "diagnostic", "install_ref", "instance", "launch_plan", "launcher", "product", "profile"}
+ALLOWED_SCHEMA_ROOTS = {
+    "account_ref",
+    "artifact_set",
+    "command",
+    "common",
+    "daemon",
+    "diagnostic",
+    "install_ref",
+    "instance",
+    "launch_plan",
+    "launcher",
+    "product",
+    "profile",
+}
 ALLOWED_CONTENT_ROOTS = {"policy", "templates"}
 ALLOWED_RELEASE_ROOTS = {"packaging", "profiles"}
-ALLOWED_PACKAGING_ROOTS = {"linux", "macos", "portable", "windows"}
-ALLOWED_APPS = {"appkit", "cli", "daemon", "gtk", "qt", "tui", "winforms"}
+ALLOWED_PACKAGING_ROOTS = {"bsd", "linux", "macos", "portable", "windows"}
+ALLOWED_APPS = {"cli", "daemon", "gui", "tui"}
+ALLOWED_GUI_PROVIDERS = {"appkit", "gtk", "qt", "win32"}
 
 
 def main() -> int:
@@ -60,6 +77,7 @@ def main() -> int:
     problems.extend(check_children("release", ALLOWED_RELEASE_ROOTS))
     problems.extend(check_children("release/packaging", ALLOWED_PACKAGING_ROOTS))
     problems.extend(check_children("apps", ALLOWED_APPS))
+    problems.extend(check_children("apps/gui", ALLOWED_GUI_PROVIDERS))
     problems.extend(check_required_paths())
     problems.extend(check_forbidden_product_or_setup_semantics())
     if problems:
@@ -110,8 +128,12 @@ def check_required_paths() -> list[str]:
     required = [
         ROOT / "include" / "ulk" / "ulk_api.h",
         ROOT / "include" / "ulk" / "ulk_command.h",
+        ROOT / "include" / "ulk" / "ulk_artifact_set.h",
+        ROOT / "include" / "ulu" / "ulu_api.h",
         ROOT / "runtime" / "launcher" / "kernel" / "ulk_api.c",
+        ROOT / "runtime" / "launcher" / "artifact_set" / "README.md",
         ROOT / "contracts" / "schema" / "command" / "command_request.v1.schema.json",
+        ROOT / "contracts" / "schema" / "artifact_set" / "artifact_set.v1.schema.json",
         ROOT / "contracts" / "schema" / "launch_plan" / "launch_plan.v1.schema.json",
         ROOT / "docs" / "architecture" / "boundary.md",
     ]

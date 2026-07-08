@@ -1,7 +1,7 @@
 # Universal Launcher
 
 Universal Launcher is the product-agnostic launcher kernel for products, install
-references, instances, profiles, accounts, launch plans, command graph,
+references, instances, profiles, account references, artifact sets, launch plans, command graph,
 dry-run, audit, diagnostics, daemon protocol, and frontend-neutral command
 clients.
 
@@ -21,9 +21,10 @@ factorio-launcher   Factorio product binding and app frontends
 ## Durable Layout
 
 ```text
-include/    public `ulk` C ABI headers
-runtime/    launcher kernel, command graph, daemon, client, platform adapters
-apps/       optional launcher frontends
+include/    public `ulk` kernel and `ulu` utility/UI/platform C ABI headers
+runtime/    launcher kernel, binding host, command graph, daemon, client,
+            platform adapters
+apps/       optional launcher frontends; GUI providers live under `apps/gui/`
 contracts/  ABI, command, schema, result, diagnostic, refusal, policy contracts
 content/    universal launcher templates and policy
 release/    package manifests and release profiles
@@ -45,6 +46,23 @@ packaging/
 setup/
 factorio/
 ```
+
+The app grammar is:
+
+```text
+apps/
+  cli/
+  tui/
+  daemon/
+  gui/
+    win32/
+    appkit/
+    gtk/
+    qt/
+```
+
+Use `artifact_set` for universal product-associated files. Factorio modsets are
+one product binding's artifact-set semantics, not a universal launcher noun.
 
 ## Bootstrap Validation
 

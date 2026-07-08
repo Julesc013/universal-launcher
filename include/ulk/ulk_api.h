@@ -2,6 +2,7 @@
 #define ULK_API_H
 
 #include "ulk_allocator.h"
+#include "ulk_artifact_set.h"
 #include "ulk_command.h"
 
 #ifdef __cplusplus
