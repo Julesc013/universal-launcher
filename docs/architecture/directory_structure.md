@@ -5,7 +5,7 @@ universal-launcher/
   include/    public `ulk` kernel and `ulu` utility/UI/platform C ABI headers
   runtime/    launcher kernel, binding host, command graph, daemon, client,
               platform adapters
-  apps/       optional launcher frontends; GUI providers live under apps/gui/
+  apps/       optional CLI, TUI, daemon, and reference app shells
   contracts/  ABI, command, schema, result, diagnostic, refusal, policy
   content/    universal launcher templates and policy
   release/    package manifests and release profiles
@@ -32,14 +32,11 @@ apps/
   tui/
   daemon/
   gui/
-    win32/
-    appkit/
-    gtk/
-    qt/
 ```
 
-GUI providers are grouped below `apps/gui/` so `apps/` expresses frontend
-classes first and toolkit/platform choices second.
+Universal Launcher keeps GUI ownership to product-neutral reference policy.
+Concrete product GUI stacks live in product repos and call the same command
+graph, daemon protocol, JSON transport, or C ABI.
 
 ## Launcher Runtime Modules
 

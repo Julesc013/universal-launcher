@@ -48,7 +48,7 @@ Validators prevent regression.
 include/    public `ulk` kernel and `ulu` utility/UI/platform C ABI headers
 runtime/    launcher kernel, binding host, command graph, daemon, client,
             platform adapters
-apps/       optional launcher frontends; GUI providers live under `apps/gui/`
+apps/       optional CLI, TUI, daemon, and reference app shells
 contracts/  ABI, command, schema, result, diagnostic, refusal, policy contracts
 content/    universal launcher templates and policy
 release/    package manifests and release profiles
@@ -79,11 +79,12 @@ apps/
   tui/
   daemon/
   gui/
-    win32/
-    appkit/
-    gtk/
-    qt/
 ```
+
+Universal Launcher does not own product GUI matrices. Product repositories may
+ship WinForms, WinUI, AppKit, SwiftUI, GTK, Qt, or other frontends over the
+same command graph, daemon protocol, or C ABI. This repo keeps GUI ownership
+to reference shell policy only.
 
 Use `artifact_set` for universal product-associated files. Factorio modsets are
 one product binding's artifact-set semantics, not a universal launcher noun.

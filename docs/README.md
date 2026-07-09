@@ -5,6 +5,7 @@
 - [Boundary](architecture/boundary.md)
 - [Directory Structure](architecture/directory_structure.md)
 - [Root Grammar](architecture/root_grammar.md)
+- [Language And Runtime Policy](architecture/language_and_runtime_policy.md)
 - [Command Graph](architecture/command_graph.md)
 - [Module Graph](architecture/module_graph.md)
 - [Data Flow](architecture/data_flow.md)
@@ -15,4 +16,5 @@
 - [Artifact Set Model](architecture/artifact_set_model.md)
 - [Launch Plan Model](architecture/launch_plan_model.md)
 - [Setup Handoff](architecture/setup_handoff.md)
+- [Compatibility Tiers](platform/compatibility_tiers.md)
 - [Roadmap](roadmap.md)

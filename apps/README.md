@@ -9,11 +9,11 @@ apps/
   tui/
   daemon/
   gui/
-    win32/
-    appkit/
-    gtk/
-    qt/
 ```
 
 Reusable orchestration, client, daemon, binding, and platform behavior belongs
 under `runtime/`.
+
+Product-specific GUI matrices live in product repos. Universal Launcher may
+host reference GUI shell policy, but it must not absorb WinForms, WinUI,
+AppKit, SwiftUI, GTK, Qt, or product-specific UI behavior into the kernel.

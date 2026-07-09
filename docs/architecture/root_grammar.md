@@ -22,3 +22,7 @@ archive/     quarantined old/prototype/generated retained material
 to launcher ownership: command, product, install refs, instances, profiles,
 account refs, artifact sets, launch plans, daemon/client contracts,
 diagnostics, and audit.
+
+Runtime folders are domain folders, not language-version buckets. Do not create
+`runtime/**/cpp98`, `runtime/**/cpp11`, `runtime/**/c11`, or similar paths.
+Language level is a build policy, not a source ownership boundary.

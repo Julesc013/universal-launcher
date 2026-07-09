@@ -1,7 +1,7 @@
 # Command Graph
 
 The command graph is the stable model every frontend calls. CLI, TUI, daemon,
-WinForms, AppKit, GTK, and Qt are sibling views over the same command graph.
+Product frontends are sibling views over the same command graph.
 
 Each command should declare:
 
