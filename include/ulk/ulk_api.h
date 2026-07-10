@@ -28,6 +28,16 @@ ULK_API int ULK_CALL ulk_command_register_v1(
     const ulk_command_descriptor_v1* descriptor
 );
 
+ULK_API int ULK_CALL ulk_command_register_v2(
+    ulk_context* context,
+    const ulk_command_descriptor_v2* descriptor
+);
+
+ULK_API int ULK_CALL ulk_command_unregister_v1(
+    ulk_context* context,
+    ulk_string_view command_name
+);
+
 ULK_API uint32_t ULK_CALL ulk_abi_version_v1(void);
 
 ULK_API void ULK_CALL ulk_context_destroy_v1(ulk_context* context);

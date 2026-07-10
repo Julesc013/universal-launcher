@@ -17,7 +17,7 @@ EXPECTED_COMMANDS = {
     "install_refs.inspect",
     "instance.create",
     "launch_plan.build",
-    "diagnostics.report",
+    "diagnostics.run",
 }
 
 COMMAND_PATTERN = re.compile(r"^[a-z0-9_]+(\.[a-z0-9_]+)+$")
