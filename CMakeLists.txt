@@ -12,6 +12,7 @@ target_include_directories(ulk_static PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/includ
 
 add_library(ulk_shared SHARED runtime/launcher/kernel/ulk_api.c)
 target_include_directories(ulk_shared PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_compile_definitions(ulk_shared PRIVATE ULK_BUILD_SHARED)
 set_target_properties(ulk_shared PROPERTIES OUTPUT_NAME ulk WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 add_library(ulk ALIAS ulk_static)

@@ -18,4 +18,10 @@ typedef struct ulk_command_response_v1 {
     ulk_error_v1 error;
 } ulk_command_response_v1;
 
+/*
+ * Response string views are borrowed. They remain valid until the next
+ * command call on the same context or until that context is destroyed.
+ * Callers set response.struct_size before every call. No disposal is required.
+ */
+
 #endif

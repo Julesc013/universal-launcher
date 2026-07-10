@@ -3,9 +3,20 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define ULK_MAX_REGISTERED_COMMANDS 32
+
+typedef struct ulk_registered_command {
+    char* command_name;
+    ulk_size command_name_size;
+    ulk_command_handler_v1 handler;
+    void* user;
+} ulk_registered_command;
+
 struct ulk_context {
     ulk_allocator_v1 allocator;
     int has_allocator;
+    ulk_size registered_count;
+    ulk_registered_command registered[ULK_MAX_REGISTERED_COMMANDS];
 };
 
 typedef struct ulk_static_response {
@@ -56,11 +67,10 @@ static void ulk_set_response(
     const char* error_message
 )
 {
-    if (response == 0) {
-        return;
-    }
-
-    memset(response, 0, sizeof(*response));
+    response->status = 0;
+    response->json_payload.data = 0;
+    response->json_payload.size = 0;
+    memset(&response->error, 0, sizeof(response->error));
     response->struct_size = sizeof(*response);
     response->status = status;
 
@@ -75,6 +85,25 @@ static void ulk_set_response(
         response->error.message.data = error_message;
         response->error.message.size = (ulk_size)strlen(error_message);
     }
+}
+
+static ulk_registered_command* ulk_find_registered(
+    ulk_context* context,
+    ulk_string_view command_name)
+{
+    ulk_size index;
+    if (context == 0) {
+        return 0;
+    }
+    for (index = 0; index < context->registered_count; ++index) {
+        ulk_registered_command* entry = &context->registered[index];
+        if (entry->command_name_size == command_name.size &&
+            command_name.data != 0 &&
+            memcmp(entry->command_name, command_name.data, (size_t)command_name.size) == 0) {
+            return entry;
+        }
+    }
+    return 0;
 }
 
 static ulk_static_response ulk_dispatch_command(const ulk_command_request_v1* request)
@@ -192,6 +221,11 @@ int ulk_context_create_v1(
     effective_allocator.alloc = ulk_default_alloc;
     effective_allocator.free = ulk_default_free;
 
+    if (allocator != 0 &&
+        allocator->struct_size < (ulk_size)sizeof(*allocator)) {
+        *out_context = 0;
+        return ULK_STATUS_INVALID_ARGUMENT;
+    }
     if (allocator != 0 && allocator->alloc != 0 && allocator->free != 0) {
         effective_allocator = *allocator;
     }
@@ -219,8 +253,11 @@ int ulk_command_execute_v1(
         "{\"schema\":\"ulk.command_response.v1\",\"status\":\"invalid_argument\",\"payload\":null,\"error\":{\"code\":\"invalid_argument\",\"message\":\"Universal Launcher command request is invalid\"}}";
     static const char invalid_message[] = "Universal Launcher command request is invalid";
     ulk_static_response dispatched;
+    ulk_registered_command* registered;
 
-    (void)context;
+    if (response == 0 || response->struct_size < (ulk_size)sizeof(*response)) {
+        return ULK_STATUS_INVALID_ARGUMENT;
+    }
 
     if (request == 0 ||
         request->struct_size < (ulk_size)sizeof(*request) ||
@@ -230,20 +267,67 @@ int ulk_command_execute_v1(
         return ULK_STATUS_INVALID_ARGUMENT;
     }
 
+    registered = ulk_find_registered(context, request->command_name);
+    if (registered != 0) {
+        return registered->handler(registered->user, request, response);
+    }
+
     dispatched = ulk_dispatch_command(request);
     ulk_set_response(response, dispatched.status, dispatched.payload, dispatched.error_message);
     return dispatched.status;
 }
 
+int ulk_command_register_v1(
+    ulk_context* context,
+    const ulk_command_descriptor_v1* descriptor
+)
+{
+    ulk_registered_command* entry;
+    char* command_name;
+    if (context == 0 || descriptor == 0 ||
+        descriptor->struct_size < (ulk_size)sizeof(*descriptor) ||
+        descriptor->command_name.data == 0 || descriptor->command_name.size == 0 ||
+        descriptor->handler == 0 ||
+        context->registered_count >= ULK_MAX_REGISTERED_COMMANDS ||
+        ulk_find_registered(context, descriptor->command_name) != 0) {
+        return ULK_STATUS_INVALID_ARGUMENT;
+    }
+    command_name = (char*)context->allocator.alloc(
+        context->allocator.user,
+        descriptor->command_name.size + 1);
+    if (command_name == 0) {
+        return ULK_STATUS_ERROR;
+    }
+    memcpy(command_name, descriptor->command_name.data, (size_t)descriptor->command_name.size);
+    command_name[descriptor->command_name.size] = '\0';
+    entry = &context->registered[context->registered_count++];
+    entry->command_name = command_name;
+    entry->command_name_size = descriptor->command_name.size;
+    entry->handler = descriptor->handler;
+    entry->user = descriptor->user;
+    return ULK_STATUS_OK;
+}
+
+uint32_t ulk_abi_version_v1(void)
+{
+    return ((uint32_t)ULK_API_VERSION_MAJOR << 16) | (uint32_t)ULK_API_VERSION_MINOR;
+}
+
 void ulk_context_destroy_v1(ulk_context* context)
 {
     ulk_allocator_v1 allocator;
+    ulk_size index;
 
     if (context == 0) {
         return;
     }
 
     allocator = context->allocator;
+    for (index = 0; index < context->registered_count; ++index) {
+        if (context->registered[index].command_name != 0 && allocator.free != 0) {
+            allocator.free(allocator.user, context->registered[index].command_name);
+        }
+    }
     if (context->has_allocator && allocator.free != 0) {
         allocator.free(allocator.user, context);
         return;
