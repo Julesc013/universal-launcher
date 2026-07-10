@@ -11,7 +11,11 @@ EFFECTS_POLICY = ROOT / "contracts" / "policy" / "effects.v1.toml"
 
 EXPECTED_COMMANDS = {
     "command_graph.inspect",
+    "install_refs.scan",
+    "install_refs.import",
     "install_refs.list",
+    "install_refs.inspect",
+    "instance.create",
     "launch_plan.build",
     "diagnostics.report",
 }

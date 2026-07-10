@@ -22,6 +22,8 @@ slice:
 
 - `command_graph.inspect`
 - `product.inspect`
+- `install_refs.scan`
+- `install_refs.import`
 - `install_refs.list`
 - `install_refs.inspect`
 - `instance.create`
@@ -33,8 +35,9 @@ slice:
 - `diagnostics.run`
 
 These commands return `ulk.command_response.v1` JSON payloads and support
-dry-run launch-plan preview. The built-in registry is intentionally empty and
-generic; product bindings supply product-specific facts. The kernel does not
+dry-run launch-plan preview. The built-in fallbacks remain generic; statically
+linked product bindings register real handlers on a context and registered
+handlers take precedence. The kernel does not
 install, repair, uninstall, roll back, download, or mutate product installs.
 
 Compatibility aliases:
@@ -42,7 +45,7 @@ Compatibility aliases:
 - `instances.list` maps to `instance.list`.
 - `diagnostics.report` maps to `diagnostics.run`.
 
-`instance.create` is preview-only in the minimal kernel. Dry-run returns an
+Without a registered binding, `instance.create` is preview-only in the minimal kernel. Dry-run returns an
 `ulk.instance_create_plan.v1` payload with `effects = ["workspace_write"]`.
 Non-dry-run execution refuses with `product_binding_required` until a product
 binding and workspace store own the concrete instance materialization.

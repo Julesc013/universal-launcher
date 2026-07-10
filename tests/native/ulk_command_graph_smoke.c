@@ -116,6 +116,9 @@ int main(void)
     if (run_command(context, "command_graph.inspect", 1, "\"command\":\"launch_plan.build\"") != 0) {
         return 20;
     }
+    if (run_command(context, "command_graph.inspect", 1, "\"command\":\"install_refs.scan\"") != 0) {
+        return 41;
+    }
     if (run_command(context, "product.inspect", 1, "\"schema\":\"ulk.product.v1\"") != 0) {
         return 21;
     }

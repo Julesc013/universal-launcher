@@ -1,0 +1,10 @@
+command_id = "instance.create"
+owner = "universal-launcher"
+effects = ["workspace_write"]
+request_schema = "contracts/schema/command/command_request.v1.schema.json"
+response_schema = "contracts/schema/command/command_response.v1.schema.json"
+result_schema = "contracts/result/result.v1.schema.json"
+refusal_schema = "contracts/refusal/refusal.v1.schema.json"
+dry_run_behavior = "The generic kernel refuses without a registered product binding; the binding owns materialization semantics."
+refusal_codes = ["invalid_argument", "product_binding_required", "persistent_target_exists"]
+cli_mapping_later = "facman instances create <name> --install <id> --json"
