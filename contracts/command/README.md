@@ -15,3 +15,8 @@ Each descriptor declares:
 - `dry_run_behavior`
 - `refusal_codes`
 - `cli_mapping_later`
+
+The first registered-handler consumer covers `install_refs.scan`,
+`install_refs.import`, `install_refs.inspect`, `instance.create`, and
+`launch_plan.build`. Registration is static and in-process; it is not a dynamic
+plugin ABI.

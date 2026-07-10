@@ -33,6 +33,22 @@ static int contains(ulk_string_view haystack, const char* needle)
     return 0;
 }
 
+static int ULK_CALL registered_handler(
+    void* user,
+    const ulk_command_request_v1* request,
+    ulk_command_response_v1* response)
+{
+    static const char payload[] =
+        "{\"schema\":\"ulk.command_response.v1\",\"status\":\"ok\",\"payload\":{\"schema\":\"fixture.registered.v1\"},\"error\":null}";
+    (void)user;
+    (void)request;
+    response->status = ULK_STATUS_OK;
+    response->json_payload = view_from_cstr(payload);
+    response->error.struct_size = sizeof(response->error);
+    response->error.code = ULK_STATUS_OK;
+    return ULK_STATUS_OK;
+}
+
 static int run_command(
     ulk_context* context,
     const char* command_name,
@@ -46,6 +62,7 @@ static int run_command(
 
     memset(&request, 0, sizeof(request));
     memset(&response, 0, sizeof(response));
+    response.struct_size = sizeof(response);
     request.struct_size = sizeof(request);
     request.command_name = view_from_cstr(command_name);
     request.json_payload = view_from_cstr("{}");
@@ -74,13 +91,33 @@ int main(void)
     ulk_command_request_v1 request;
     ulk_command_response_v1 response;
     int status;
+    ulk_command_descriptor_v1 descriptor;
+    ulk_allocator_v1 truncated_allocator;
 
     if (ulk_context_create_v1(0, &context) != ULK_STATUS_OK || context == 0) {
         return 10;
     }
+    if (ulk_abi_version_v1() != ((ULK_API_VERSION_MAJOR << 16) | ULK_API_VERSION_MINOR)) {
+        return 11;
+    }
+
+    memset(&descriptor, 0, sizeof(descriptor));
+    descriptor.struct_size = sizeof(descriptor);
+    descriptor.command_name = view_from_cstr("install_refs.scan");
+    descriptor.effects_json = view_from_cstr("[\"workspace_read\"]");
+    descriptor.handler = registered_handler;
+    if (ulk_command_register_v1(context, &descriptor) != ULK_STATUS_OK) {
+        return 12;
+    }
+    if (run_command(context, "install_refs.scan", 1, "\"schema\":\"fixture.registered.v1\"") != 0) {
+        return 13;
+    }
 
     if (run_command(context, "command_graph.inspect", 1, "\"command\":\"launch_plan.build\"") != 0) {
         return 20;
+    }
+    if (run_command(context, "command_graph.inspect", 1, "\"command\":\"install_refs.scan\"") != 0) {
+        return 41;
     }
     if (run_command(context, "product.inspect", 1, "\"schema\":\"ulk.product.v1\"") != 0) {
         return 21;
@@ -96,6 +133,7 @@ int main(void)
     }
     memset(&request, 0, sizeof(request));
     memset(&response, 0, sizeof(response));
+    response.struct_size = sizeof(response);
     request.struct_size = sizeof(request);
     request.command_name = view_from_cstr("instance.create");
     request.json_payload = view_from_cstr("{}");
@@ -142,6 +180,7 @@ int main(void)
 
     memset(&request, 0, sizeof(request));
     memset(&response, 0, sizeof(response));
+    response.struct_size = sizeof(response);
     request.struct_size = sizeof(request);
     request.command_name = view_from_cstr("missing.command");
     request.json_payload = view_from_cstr("{}");
@@ -156,6 +195,7 @@ int main(void)
     }
 
     memset(&response, 0, sizeof(response));
+    response.struct_size = sizeof(response);
     status = ulk_command_execute_v1(context, 0, &response);
     if (status != ULK_STATUS_INVALID_ARGUMENT ||
         response.status != ULK_STATUS_INVALID_ARGUMENT ||
@@ -165,6 +205,20 @@ int main(void)
         return 31;
     }
 
+    memset(&response, 0, sizeof(response));
+    response.struct_size = sizeof(response) - 1;
+    status = ulk_command_execute_v1(context, &request, &response);
+    if (status != ULK_STATUS_INVALID_ARGUMENT) {
+        return 39;
+    }
+
     ulk_context_destroy_v1(context);
+
+    memset(&truncated_allocator, 0, sizeof(truncated_allocator));
+    truncated_allocator.struct_size = sizeof(truncated_allocator) - 1;
+    context = 0;
+    if (ulk_context_create_v1(&truncated_allocator, &context) != ULK_STATUS_INVALID_ARGUMENT || context != 0) {
+        return 40;
+    }
     return 0;
 }
