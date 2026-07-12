@@ -56,6 +56,19 @@ behavior, availability, owner, binding, and whether the handler is built in or
 registered. Its returned JSON storage belongs to the context and remains valid
 until the next registry mutation, graph inspection, or context destruction.
 
+Registered commands are stored in allocator-owned memory that grows
+geometrically. The registry has no fixed command-count ceiling; growth is
+bounded by a 64 KiB entry-storage budget, descriptor text limits, and allocator
+success. Every descriptor string is copied into context-owned storage, so the
+caller may release or mutate its input after registration.
+
+An `ulk_context` is a serialized session boundary. Registration,
+unregistration, execution, inspection, and destruction must not overlap on the
+same context. Independent contexts may be used concurrently. A caller that
+shares one context across threads must provide external serialization. Response
+views and graph JSON are borrowed exactly as documented and must be copied
+before the next operation on that context when they need a longer lifetime.
+
 The v1 descriptor layout is unchanged. The additive v2 descriptor and register
 entrypoint provide the metadata required for this projection; this remains an
 experimental ABI correctness floor rather than a stable third-party ABI claim.

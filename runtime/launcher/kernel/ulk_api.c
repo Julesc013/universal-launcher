@@ -3,8 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define ULK_MAX_REGISTERED_COMMANDS 32
 #define ULK_MAX_DESCRIPTOR_TEXT 4096
+#define ULK_INITIAL_REGISTRY_CAPACITY 8
+#define ULK_REGISTRY_STORAGE_BUDGET_BYTES (64u * 1024u)
 
 typedef struct ulk_command_metadata {
     const char* command_name;
@@ -41,7 +42,8 @@ struct ulk_context {
     ulk_allocator_v1 allocator;
     int has_allocator;
     ulk_size registered_count;
-    ulk_registered_command registered[ULK_MAX_REGISTERED_COMMANDS];
+    ulk_size registered_capacity;
+    ulk_registered_command* registered;
     char* command_graph_json;
 };
 
@@ -388,6 +390,68 @@ static void ulk_clear_registered(ulk_context* context, ulk_registered_command* e
     memset(entry, 0, sizeof(*entry));
 }
 
+static ulk_size ulk_registry_capacity_limit(void)
+{
+    return (ulk_size)(ULK_REGISTRY_STORAGE_BUDGET_BYTES / sizeof(ulk_registered_command));
+}
+
+static int ulk_ensure_registry_capacity(ulk_context* context, ulk_size required_count)
+{
+    ulk_size capacity_limit;
+    ulk_size new_capacity;
+    ulk_size allocation_size;
+    ulk_registered_command* replacement;
+
+    if (context == 0) {
+        return ULK_STATUS_INVALID_ARGUMENT;
+    }
+    if (required_count <= context->registered_capacity) {
+        return ULK_STATUS_OK;
+    }
+
+    capacity_limit = ulk_registry_capacity_limit();
+    if (required_count > capacity_limit) {
+        return ULK_STATUS_INVALID_ARGUMENT;
+    }
+
+    new_capacity = context->registered_capacity == 0
+        ? (ulk_size)ULK_INITIAL_REGISTRY_CAPACITY
+        : context->registered_capacity;
+    while (new_capacity < required_count) {
+        if (new_capacity > capacity_limit / 2) {
+            new_capacity = capacity_limit;
+            break;
+        }
+        new_capacity *= 2;
+    }
+    if (new_capacity < required_count ||
+        new_capacity > capacity_limit ||
+        new_capacity > ((ulk_size)-1) / (ulk_size)sizeof(ulk_registered_command)) {
+        return ULK_STATUS_INVALID_ARGUMENT;
+    }
+
+    allocation_size = new_capacity * (ulk_size)sizeof(ulk_registered_command);
+    replacement = (ulk_registered_command*)context->allocator.alloc(
+        context->allocator.user,
+        allocation_size);
+    if (replacement == 0) {
+        return ULK_STATUS_ERROR;
+    }
+    memset(replacement, 0, (size_t)allocation_size);
+    if (context->registered_count != 0) {
+        memcpy(
+            replacement,
+            context->registered,
+            (size_t)(context->registered_count * (ulk_size)sizeof(ulk_registered_command)));
+    }
+    if (context->registered != 0) {
+        context->allocator.free(context->allocator.user, context->registered);
+    }
+    context->registered = replacement;
+    context->registered_capacity = new_capacity;
+    return ULK_STATUS_OK;
+}
+
 static int ulk_register_internal(
     ulk_context* context,
     ulk_string_view command_name,
@@ -405,6 +469,7 @@ static int ulk_register_internal(
 )
 {
     ulk_registered_command pending;
+    int capacity_status;
 
     if (context == 0 ||
         !ulk_is_canonical_command_id(command_name) ||
@@ -419,9 +484,13 @@ static int ulk_register_internal(
         !ulk_view_is_text(owner) ||
         !ulk_view_is_text(binding) ||
         handler == 0 ||
-        context->registered_count >= ULK_MAX_REGISTERED_COMMANDS ||
         ulk_find_registered(context, command_name) != 0) {
         return ULK_STATUS_INVALID_ARGUMENT;
+    }
+
+    capacity_status = ulk_ensure_registry_capacity(context, context->registered_count + 1);
+    if (capacity_status != ULK_STATUS_OK) {
+        return capacity_status;
     }
 
     memset(&pending, 0, sizeof(pending));
@@ -1020,6 +1089,9 @@ void ulk_context_destroy_v1(ulk_context* context)
     ulk_invalidate_graph(context);
     for (index = 0; index < context->registered_count; ++index) {
         ulk_clear_registered(context, &context->registered[index]);
+    }
+    if (context->registered != 0) {
+        allocator.free(allocator.user, context->registered);
     }
     if (context->has_allocator && allocator.free != 0) {
         allocator.free(allocator.user, context);

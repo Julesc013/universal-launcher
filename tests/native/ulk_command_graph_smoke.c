@@ -13,7 +13,7 @@
         } \
     } while (0)
 
-#define TEST_REGISTERED_CAPACITY 32
+#define TEST_REGISTRY_STORAGE_BUDGET_BYTES (64u * 1024u)
 
 typedef struct expected_descriptor_v1_layout {
     ulk_size struct_size;
@@ -338,7 +338,10 @@ static int test_registration_validation_and_capacity(void)
     ulk_context* context = 0;
     ulk_command_descriptor_v2 descriptor;
     ulk_command_descriptor_v1 descriptor_v1;
-    char names[TEST_REGISTERED_CAPACITY + 1][32];
+    ulk_command_response_v1 response;
+    static const int milestones[] = {1, 32, 33, 64, 256};
+    char name[48];
+    int milestone_index;
     int index;
 
     CHECK(ulk_context_create_v1(0, &context) == ULK_STATUS_OK, 90);
@@ -357,22 +360,44 @@ static int test_registration_validation_and_capacity(void)
     CHECK(ulk_command_register_v2(context, &descriptor) == ULK_STATUS_INVALID_ARGUMENT, 95);
     ulk_context_destroy_v1(context);
 
-    CHECK(ulk_context_create_v1(0, &context) == ULK_STATUS_OK, 96);
-    for (index = 0; index < TEST_REGISTERED_CAPACITY; ++index) {
-        snprintf(names[index], sizeof(names[index]), "fixture.capacity_%02d", index);
+    for (milestone_index = 0;
+         milestone_index < (int)(sizeof(milestones) / sizeof(milestones[0]));
+         ++milestone_index) {
+        CHECK(ulk_context_create_v1(0, &context) == ULK_STATUS_OK, 96);
+        for (index = 0; index < milestones[milestone_index]; ++index) {
+            snprintf(name, sizeof(name), "fixture.capacity_%03d", index);
+            memset(&descriptor_v1, 0, sizeof(descriptor_v1));
+            descriptor_v1.struct_size = sizeof(descriptor_v1);
+            descriptor_v1.command_name = view_from_cstr(name);
+            descriptor_v1.effects_json = view_from_cstr("[\"none\"]");
+            descriptor_v1.handler = registered_handler;
+            CHECK(ulk_command_register_v1(context, &descriptor_v1) == ULK_STATUS_OK, 97);
+        }
+        CHECK(execute_command(context, "command_graph.inspect", 1, &response) == ULK_STATUS_OK, 98);
+        CHECK(contains(response.json_payload, "\"command\":\"fixture.capacity_000\""), 99);
+        snprintf(name, sizeof(name), "\"command\":\"fixture.capacity_%03d\"", milestones[milestone_index] - 1);
+        CHECK(contains(response.json_payload, name), 100);
+        ulk_context_destroy_v1(context);
+        context = 0;
+    }
+
+    CHECK(ulk_context_create_v1(0, &context) == ULK_STATUS_OK, 101);
+    for (index = 0;; ++index) {
+        int registration_status;
+        snprintf(name, sizeof(name), "fixture.budget_%04d", index);
         memset(&descriptor_v1, 0, sizeof(descriptor_v1));
         descriptor_v1.struct_size = sizeof(descriptor_v1);
-        descriptor_v1.command_name = view_from_cstr(names[index]);
+        descriptor_v1.command_name = view_from_cstr(name);
         descriptor_v1.effects_json = view_from_cstr("[\"none\"]");
         descriptor_v1.handler = registered_handler;
-        CHECK(ulk_command_register_v1(context, &descriptor_v1) == ULK_STATUS_OK, 97);
+        registration_status = ulk_command_register_v1(context, &descriptor_v1);
+        if (registration_status != ULK_STATUS_OK) {
+            CHECK(registration_status == ULK_STATUS_INVALID_ARGUMENT, 102);
+            break;
+        }
+        CHECK(index < (int)TEST_REGISTRY_STORAGE_BUDGET_BYTES, 103);
     }
-    snprintf(
-        names[TEST_REGISTERED_CAPACITY],
-        sizeof(names[TEST_REGISTERED_CAPACITY]),
-        "fixture.capacity_overflow");
-    descriptor_v1.command_name = view_from_cstr(names[TEST_REGISTERED_CAPACITY]);
-    CHECK(ulk_command_register_v1(context, &descriptor_v1) == ULK_STATUS_INVALID_ARGUMENT, 98);
+    CHECK(index >= 256, 104);
     ulk_context_destroy_v1(context);
     return 0;
 }
@@ -402,7 +427,7 @@ static int test_allocator_and_failure_cleanup(void)
     memset(&state, 0, sizeof(state));
     context = 0;
     CHECK(ulk_context_create_v1(&allocator, &context) == ULK_STATUS_OK, 115);
-    state.fail_after = state.allocations + 4;
+    state.fail_after = state.allocations;
     fill_descriptor_v2(&descriptor, "fixture.failure");
     CHECK(ulk_command_register_v2(context, &descriptor) == ULK_STATUS_ERROR, 116);
     ulk_context_destroy_v1(context);
