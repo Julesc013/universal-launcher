@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.example.invalid/ulk/setup/setup_authority_status.v1.schema.json",
+  "title": "Setup Authority Status",
+  "type": "object",
+  "required": ["schema", "mutation_owner", "launcher_role", "allowed_operations", "forbidden_effects"],
+  "properties": {
+    "schema": { "const": "ulk.setup_authority_status.v1" },
+    "mutation_owner": { "const": "universal-setup" },
+    "launcher_role": { "const": "request_validate_reference" },
+    "allowed_operations": {
+      "type": "array",
+      "items": { "enum": ["install", "verify", "repair", "move", "uninstall", "recovery"] },
+      "uniqueItems": true
+    },
+    "forbidden_effects": {
+      "type": "array",
+      "contains": { "const": "setup_mutation" },
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    }
+  },
+  "additionalProperties": false
+}

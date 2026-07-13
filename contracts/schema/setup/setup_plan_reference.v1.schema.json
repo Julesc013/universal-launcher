@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.example.invalid/ulk/setup/setup_plan_reference.v1.schema.json",
+  "title": "Setup Plan Reference",
+  "type": "object",
+  "required": [
+    "schema",
+    "plan_id",
+    "plan_digest",
+    "input_identity_digest",
+    "operation",
+    "product_id",
+    "setup_provider",
+    "provider_revision",
+    "review_status"
+  ],
+  "properties": {
+    "schema": { "const": "ulk.setup_plan_reference.v1" },
+    "plan_id": { "type": "string", "minLength": 1 },
+    "plan_digest": { "type": "string", "minLength": 1 },
+    "input_identity_digest": { "type": "string", "minLength": 1 },
+    "operation": {
+      "enum": ["install", "verify", "repair", "move", "uninstall", "recovery"]
+    },
+    "product_id": { "type": "string", "minLength": 1 },
+    "install_id": { "type": ["string", "null"], "minLength": 1 },
+    "setup_provider": { "type": "string", "minLength": 1 },
+    "provider_revision": { "type": "string", "minLength": 1 },
+    "review_status": { "const": "reviewed" }
+  },
+  "additionalProperties": false
+}

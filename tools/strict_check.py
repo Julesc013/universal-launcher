@@ -8,7 +8,12 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from tools import command_contract_check, language_runtime_policy_check, structure_policy_check
+from tools import (
+    command_contract_check,
+    language_runtime_policy_check,
+    setup_handoff_contract_check,
+    structure_policy_check,
+)
 
 
 def main() -> int:
@@ -16,6 +21,7 @@ def main() -> int:
         ("structure", structure_policy_check.main),
         ("language-runtime-policy", language_runtime_policy_check.main),
         ("command-contract", command_contract_check.main),
+        ("setup-handoff-contract", setup_handoff_contract_check.main),
     ]
     failed: list[str] = []
     for name, check in checks:

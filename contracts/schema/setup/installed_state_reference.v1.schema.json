@@ -1,13 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://julesc013.github.io/universal-launcher/contracts/schema/launcher/install_ref.v1.schema.json",
-  "title": "Install Reference",
+  "$id": "https://schemas.example.invalid/ulk/setup/installed_state_reference.v1.schema.json",
+  "title": "Installed State Reference",
   "type": "object",
   "required": [
     "schema",
+    "setup_state_ref",
     "install_id",
     "product_id",
-    "ownership",
     "exact_product_version",
     "entrypoint",
     "capabilities",
@@ -16,11 +16,10 @@
     "state_revision"
   ],
   "properties": {
-    "schema": { "const": "ulk.install_ref.v1" },
+    "schema": { "const": "ulk.installed_state_reference.v1" },
+    "setup_state_ref": { "type": "string", "minLength": 1 },
     "install_id": { "type": "string", "minLength": 1 },
     "product_id": { "type": "string", "minLength": 1 },
-    "ownership": { "enum": ["managed", "imported", "foreign_owned"] },
-    "setup_state_ref": { "type": ["string", "null"], "minLength": 1 },
     "exact_product_version": { "type": "string", "minLength": 1 },
     "entrypoint": { "type": "string", "minLength": 1 },
     "capabilities": {
@@ -34,11 +33,5 @@
     "last_verification_identity": { "type": "string", "minLength": 1 },
     "state_revision": { "type": "string", "minLength": 1 }
   },
-  "allOf": [
-    {
-      "if": { "properties": { "ownership": { "const": "managed" } } },
-      "then": { "required": ["setup_state_ref"] }
-    }
-  ],
   "additionalProperties": false
 }
