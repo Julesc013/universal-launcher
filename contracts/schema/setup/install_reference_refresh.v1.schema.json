@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.example.invalid/ulk/setup/install_reference_refresh.v1.schema.json",
+  "title": "Install Reference Refresh",
+  "type": "object",
+  "required": [
+    "schema",
+    "result_id",
+    "transition",
+    "install_reference",
+    "dependent_instance_status",
+    "launch_plan_status"
+  ],
+  "properties": {
+    "schema": { "const": "ulk.install_reference_refresh.v1" },
+    "result_id": { "type": "string", "minLength": 1 },
+    "transition": { "enum": ["created", "refreshed", "archived", "unchanged"] },
+    "install_reference": {
+      "oneOf": [
+        { "$ref": "../launcher/install_ref.v1.schema.json" },
+        { "type": "null" }
+      ]
+    },
+    "dependent_instance_status": {
+      "enum": ["ready", "install_changed", "install_unavailable", "recovery_required"]
+    },
+    "launch_plan_status": { "enum": ["fresh", "stale"] }
+  },
+  "additionalProperties": false
+}

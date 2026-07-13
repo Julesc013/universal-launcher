@@ -3,11 +3,42 @@
   "$id": "https://schemas.example.invalid/ulk/install_ref/install_ref.v1.schema.json",
   "title": "Install Reference",
   "type": "object",
-  "required": ["schema", "install_id", "product_id"],
+  "required": [
+    "schema",
+    "install_id",
+    "product_id",
+    "ownership",
+    "exact_product_version",
+    "entrypoint",
+    "capabilities",
+    "lifecycle_status",
+    "last_verification_identity",
+    "state_revision"
+  ],
   "properties": {
     "schema": { "const": "ulk.install_ref.v1" },
     "install_id": { "type": "string", "minLength": 1 },
-    "product_id": { "type": "string", "minLength": 1 }
+    "product_id": { "type": "string", "minLength": 1 },
+    "ownership": { "enum": ["managed", "imported", "foreign_owned"] },
+    "setup_state_ref": { "type": ["string", "null"], "minLength": 1 },
+    "exact_product_version": { "type": "string", "minLength": 1 },
+    "entrypoint": { "type": "string", "minLength": 1 },
+    "capabilities": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "lifecycle_status": {
+      "enum": ["active", "verification_failed", "recovery_required", "retired", "uninstalled"]
+    },
+    "last_verification_identity": { "type": "string", "minLength": 1 },
+    "state_revision": { "type": "string", "minLength": 1 }
   },
-  "additionalProperties": true
+  "allOf": [
+    {
+      "if": { "properties": { "ownership": { "const": "managed" } } },
+      "then": { "required": ["setup_state_ref"] }
+    }
+  ],
+  "additionalProperties": false
 }

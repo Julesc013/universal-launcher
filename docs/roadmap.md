@@ -45,3 +45,15 @@ a broad abstract platform.
 
 - Hand install/verify/repair/uninstall/rollback to Universal Setup.
 - Do not absorb setup mutation into the launcher.
+
+## M1-WU8-SETUP-HANDOFF
+
+- Bind immutable reviewed setup plan identities to apply requests.
+- Accept only identity-matching setup results from the selected provider.
+- Create or refresh managed install references after verified completion.
+- Preserve product version across repair.
+- Refresh move references only after the destination verifies.
+- Archive uninstalled references and surface structured dependent-instance
+  status.
+- Mark launch plans stale whenever their installed-state revision changes.
+- Keep every setup filesystem effect outside Universal Launcher.

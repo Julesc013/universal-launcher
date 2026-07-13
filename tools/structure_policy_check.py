@@ -56,6 +56,7 @@ ALLOWED_SCHEMA_ROOTS = {
     "launcher",
     "product",
     "profile",
+    "setup",
 }
 ALLOWED_CONTENT_ROOTS = {"policy", "templates"}
 ALLOWED_RELEASE_ROOTS = {"packaging", "profiles"}

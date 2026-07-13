@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.example.invalid/ulk/setup/setup_request.v1.schema.json",
+  "title": "Setup Request",
+  "type": "object",
+  "required": [
+    "schema",
+    "request_id",
+    "phase",
+    "operation",
+    "product_id",
+    "setup_provider"
+  ],
+  "properties": {
+    "schema": { "const": "ulk.setup_request.v1" },
+    "request_id": { "type": "string", "minLength": 1 },
+    "phase": { "enum": ["plan", "apply"] },
+    "operation": {
+      "enum": ["install", "verify", "repair", "move", "uninstall", "recovery"]
+    },
+    "product_id": { "type": "string", "minLength": 1 },
+    "install_id": { "type": ["string", "null"], "minLength": 1 },
+    "setup_provider": { "type": "string", "minLength": 1 },
+    "provider_revision": { "type": "string", "minLength": 1 },
+    "reviewed_plan": {
+      "oneOf": [
+        { "$ref": "setup_plan_reference.v1.schema.json" },
+        { "type": "null" }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "phase": { "const": "apply" } } },
+      "then": { "required": ["provider_revision", "reviewed_plan"] }
+    }
+  ],
+  "additionalProperties": false
+}
