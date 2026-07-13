@@ -33,3 +33,18 @@ they must not silently rebuild or execute a plan.
 No handoff contract exposes a generic mutation escape hatch. The launcher does
 not extract archives, write installations, interpret product layouts, or
 implement repair, move, uninstall, rollback, or recovery.
+
+## Native projection
+
+The additive `ulk` 1.2 ABI validates apply requests against reviewed plan
+references, projects setup results into launcher-owned install-reference state,
+and checks whether a launch plan remains fresh. The projection is allocation
+free and performs no I/O. Returned string views borrow storage from the plan,
+result, installed-state, or current-reference arguments and remain valid only
+while that source storage remains valid.
+
+Projection does not grant setup authority. It rejects foreign-owned and
+imported references for managed lifecycle changes, rejects identity drift,
+preserves the exact version across existing-install operations, requires an
+active verified installed state before a move can refresh a reference, and
+turns recovery or uninstall outcomes into structured status.
