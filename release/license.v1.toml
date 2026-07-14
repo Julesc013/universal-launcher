@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText: 2026 Jules C
+# SPDX-License-Identifier: MIT
+
+schema = "universal_launcher.license.v1"
+project_id = "universal_launcher"
+project_name = "Universal Launcher"
+spdx_license_expression = "MIT"
+package_license_expression = "MIT"
+license_file = "LICENSE"
+copyright = "Copyright (c) 2026 Jules C"
+publication_status = "unpublished"
+publisher_authenticity = "not_proven_unsigned"
+
+third_party_runtime_dependencies = []

@@ -100,3 +100,10 @@ cmake --build build/native-smoke
 
 The current repository is a canonical bootstrap, not a production launcher
 implementation yet.
+
+## License
+
+Universal Launcher is licensed under the [MIT License](LICENSE). The canonical
+machine-readable package identity is `release/license.v1.toml`. That license
+choice does not imply signing, publication, or publisher authenticity; current
+artifacts remain unsigned and unpublished.
