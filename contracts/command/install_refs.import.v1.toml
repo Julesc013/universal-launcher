@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Jules C
+# SPDX-License-Identifier: MIT
+
 command_id = "install_refs.import"
 owner = "universal-launcher"
 effects = ["workspace_write"]
