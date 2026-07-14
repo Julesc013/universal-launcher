@@ -217,11 +217,11 @@ int ulk_setup_result_project_v1(
     ulk_setup_copy_current(current_reference, refresh);
 
     if (result->status == ULK_SETUP_RESULT_RECOVERY_REQUIRED) {
+        refresh->dependent_instance_status = ULK_DEPENDENT_INSTANCE_RECOVERY_REQUIRED;
+        refresh->launch_plan_status = ULK_LAUNCH_PLAN_STALE;
         if (current_reference != 0) {
             refresh->transition = ULK_INSTALL_REFRESH_REFRESHED;
             refresh->install_reference.lifecycle_status = ULK_INSTALL_LIFECYCLE_RECOVERY_REQUIRED;
-            refresh->dependent_instance_status = ULK_DEPENDENT_INSTANCE_RECOVERY_REQUIRED;
-            refresh->launch_plan_status = ULK_LAUNCH_PLAN_STALE;
         }
         return ULK_STATUS_OK;
     }
@@ -292,6 +292,34 @@ int ulk_launch_plan_install_status_v1(
         ? ULK_LAUNCH_PLAN_FRESH
         : ULK_LAUNCH_PLAN_STALE;
     return ULK_STATUS_OK;
+}
+
+int ulk_dependent_instance_status_code_v1(
+    ulk_dependent_instance_status_v1 status,
+    ulk_string_view* status_code
+)
+{
+    if (status_code == 0) {
+        return ULK_STATUS_INVALID_ARGUMENT;
+    }
+    switch (status) {
+    case ULK_DEPENDENT_INSTANCE_READY:
+        *status_code = ulk_setup_view("ready");
+        return ULK_STATUS_OK;
+    case ULK_DEPENDENT_INSTANCE_INSTALL_CHANGED:
+        *status_code = ulk_setup_view("managed_install_changed");
+        return ULK_STATUS_OK;
+    case ULK_DEPENDENT_INSTANCE_INSTALL_UNAVAILABLE:
+        *status_code = ulk_setup_view("managed_install_unavailable");
+        return ULK_STATUS_OK;
+    case ULK_DEPENDENT_INSTANCE_RECOVERY_REQUIRED:
+        *status_code = ulk_setup_view("managed_install_recovery_required");
+        return ULK_STATUS_OK;
+    default:
+        status_code->data = 0;
+        status_code->size = 0;
+        return ULK_STATUS_INVALID_ARGUMENT;
+    }
 }
 
 int ulk_setup_authority_status_get_v1(ulk_setup_authority_status_v1* status)

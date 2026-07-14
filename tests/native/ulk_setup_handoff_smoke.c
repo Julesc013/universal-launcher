@@ -249,6 +249,14 @@ static int test_result_status_projection(void)
         45);
     CHECK(refresh.launch_plan_status == ULK_LAUNCH_PLAN_STALE, 46);
 
+    fill_plan(&plan, ULK_SETUP_OPERATION_INSTALL);
+    fill_result(&result, &plan, ULK_SETUP_RESULT_RECOVERY_REQUIRED, 0);
+    refresh.struct_size = sizeof(refresh);
+    CHECK(ulk_setup_result_project_v1(&plan, 0, &result, &refresh) == ULK_STATUS_OK, 48);
+    CHECK(!refresh.has_install_reference, 49);
+    CHECK(refresh.dependent_instance_status == ULK_DEPENDENT_INSTANCE_RECOVERY_REQUIRED, 401);
+    CHECK(refresh.launch_plan_status == ULK_LAUNCH_PLAN_STALE, 402);
+
     result.plan_digest = view("sha256:other");
     refresh.struct_size = sizeof(refresh);
     CHECK(
@@ -304,16 +312,23 @@ static int test_uninstall_and_launch_staleness(void)
 static int test_authority_status(void)
 {
     ulk_setup_authority_status_v1 status;
+    ulk_string_view status_code;
     memset(&status, 0, sizeof(status));
     status.struct_size = sizeof(status);
     CHECK(ulk_setup_authority_status_get_v1(&status) == ULK_STATUS_OK, 60);
-    CHECK(ULK_API_VERSION_MAJOR == 1 && ULK_API_VERSION_MINOR == 2, 65);
+    CHECK(ULK_API_VERSION_MAJOR == 1 && ULK_API_VERSION_MINOR == 3, 65);
     CHECK(status.allowed_operation_mask == 0x3fu, 61);
     CHECK(!status.launcher_can_mutate_setup, 62);
     CHECK(status.mutation_owner.size == strlen("universal-setup"), 63);
     CHECK(
         memcmp(status.mutation_owner.data, "universal-setup", status.mutation_owner.size) == 0,
         64);
+    CHECK(ulk_dependent_instance_status_code_v1(
+        ULK_DEPENDENT_INSTANCE_RECOVERY_REQUIRED, &status_code) == ULK_STATUS_OK, 66);
+    CHECK(status_code.size == strlen("managed_install_recovery_required"), 67);
+    CHECK(memcmp(status_code.data, "managed_install_recovery_required", status_code.size) == 0, 68);
+    CHECK(ulk_dependent_instance_status_code_v1((ulk_dependent_instance_status_v1)0,
+        &status_code) == ULK_STATUS_INVALID_ARGUMENT, 69);
     return 0;
 }
 
