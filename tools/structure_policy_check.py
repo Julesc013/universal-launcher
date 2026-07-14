@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Jules C
+# SPDX-License-Identifier: MIT
+
 from __future__ import annotations
 
 import sys
@@ -9,6 +12,7 @@ ALLOWED_TOP_LEVEL = {
     ".github",
     ".gitignore",
     "CMakeLists.txt",
+    "LICENSE",
     "README.md",
     "apps",
     "archive",
@@ -59,7 +63,7 @@ ALLOWED_SCHEMA_ROOTS = {
     "setup",
 }
 ALLOWED_CONTENT_ROOTS = {"policy", "templates"}
-ALLOWED_RELEASE_ROOTS = {"packaging", "profiles"}
+ALLOWED_RELEASE_ROOTS = {"license.v1.toml", "packaging", "profiles"}
 ALLOWED_PACKAGING_ROOTS = {"bsd", "linux", "macos", "portable", "windows"}
 ALLOWED_APPS = {"cli", "daemon", "gui", "tui"}
 
@@ -128,7 +132,7 @@ def check_children(relative_root: str, allowed: set[str]) -> list[str]:
     for child in root.iterdir():
         if child.name == "README.md":
             continue
-        if child.is_dir() and child.name in allowed:
+        if child.name in allowed:
             continue
         problems.append(f"{relative_root}/ contains unexpected path {child.name}")
     return problems

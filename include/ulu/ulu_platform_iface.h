@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Jules C
+// SPDX-License-Identifier: MIT
+
 #ifndef ULU_PLATFORM_IFACE_H
 #define ULU_PLATFORM_IFACE_H
 

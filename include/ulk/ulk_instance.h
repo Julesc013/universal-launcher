@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Jules C
+// SPDX-License-Identifier: MIT
+
 #ifndef ULK_INSTANCE_H
 #define ULK_INSTANCE_H
 

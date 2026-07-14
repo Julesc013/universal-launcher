@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Jules C
+// SPDX-License-Identifier: MIT
+
 #include "ulk/ulk_setup_handoff.h"
 
 #include "ulk/ulk_error.h"

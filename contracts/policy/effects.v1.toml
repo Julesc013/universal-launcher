@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Jules C
+# SPDX-License-Identifier: MIT
+
 [effects]
 none = "No observable read, write, process, network, or setup effect."
 workspace_read = "Reads launcher workspace state, registry state, diagnostics, or filesystem metadata without mutation."

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Jules C
+// SPDX-License-Identifier: MIT
+
 #ifndef ULK_LAUNCH_PLAN_H
 #define ULK_LAUNCH_PLAN_H
 

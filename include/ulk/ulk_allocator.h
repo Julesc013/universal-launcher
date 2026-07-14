@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Jules C
+// SPDX-License-Identifier: MIT
+
 #ifndef ULK_ALLOCATOR_H
 #define ULK_ALLOCATOR_H
 
