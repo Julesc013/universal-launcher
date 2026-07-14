@@ -167,6 +167,11 @@ ULK_API int ULK_CALL ulk_launch_plan_install_status_v1(
     ulk_launch_plan_status_v1* status
 );
 
+ULK_API int ULK_CALL ulk_dependent_instance_status_code_v1(
+    ulk_dependent_instance_status_v1 status,
+    ulk_string_view* status_code
+);
+
 ULK_API int ULK_CALL ulk_setup_authority_status_get_v1(
     ulk_setup_authority_status_v1* status
 );
