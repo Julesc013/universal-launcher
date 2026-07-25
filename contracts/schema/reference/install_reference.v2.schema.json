@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://julesc013.github.io/universal-launcher/contracts/schema/reference/install_reference.v2.schema.json",
+  "title": "Universal Launcher install reference",
+  "type": "object",
+  "required": [
+    "schema",
+    "install_id",
+    "product_id",
+    "ownership",
+    "exact_product_version",
+    "entrypoint",
+    "capabilities",
+    "lifecycle_status",
+    "last_verification_identity",
+    "state_revision"
+  ],
+  "properties": {
+    "schema": { "const": "ulk.install_reference.v2" },
+    "install_id": { "$ref": "#/$defs/identifier" },
+    "product_id": { "$ref": "#/$defs/identifier" },
+    "ownership": { "enum": ["managed", "imported", "foreign_owned"] },
+    "setup_state_ref": { "type": ["string", "null"], "minLength": 1 },
+    "exact_product_version": { "type": "string", "minLength": 1 },
+    "entrypoint": { "type": "string", "minLength": 1 },
+    "capabilities": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "lifecycle_status": {
+      "enum": [
+        "active",
+        "verification_failed",
+        "recovery_required",
+        "retired",
+        "uninstalled"
+      ]
+    },
+    "last_verification_identity": { "type": "string", "minLength": 1 },
+    "state_revision": { "type": "string", "minLength": 1 }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "ownership": { "const": "managed" } },
+        "required": ["ownership"]
+      },
+      "then": { "required": ["setup_state_ref"] }
+    }
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._-]+$"
+    }
+  }
+}

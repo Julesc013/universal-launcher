@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://julesc013.github.io/universal-launcher/contracts/schema/reference/reference_graph.v1.schema.json",
+  "title": "Universal Launcher reference graph",
+  "type": "object",
+  "required": [
+    "schema",
+    "product",
+    "install_reference",
+    "instance",
+    "launch_plan"
+  ],
+  "properties": {
+    "schema": { "const": "ulk.reference_graph.v1" },
+    "product": { "$ref": "product_reference.v1.schema.json" },
+    "install_reference": { "$ref": "install_reference.v2.schema.json" },
+    "instance": { "$ref": "instance_reference.v2.schema.json" },
+    "profile": {
+      "oneOf": [
+        { "$ref": "profile_reference.v2.schema.json" },
+        { "type": "null" }
+      ]
+    },
+    "artifact_set": {
+      "oneOf": [
+        { "$ref": "artifact_set_reference.v1.schema.json" },
+        { "type": "null" }
+      ]
+    },
+    "launch_plan": { "$ref": "launch_plan_reference.v2.schema.json" }
+  },
+  "additionalProperties": false
+}

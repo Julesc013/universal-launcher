@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://julesc013.github.io/universal-launcher/contracts/schema/reference/instance_reference.v2.schema.json",
+  "title": "Universal Launcher instance reference",
+  "type": "object",
+  "required": [
+    "schema",
+    "instance_id",
+    "product_id",
+    "install_id",
+    "binding_revision"
+  ],
+  "properties": {
+    "schema": { "const": "ulk.instance_reference.v2" },
+    "instance_id": { "$ref": "#/$defs/identifier" },
+    "product_id": { "$ref": "#/$defs/identifier" },
+    "install_id": { "$ref": "#/$defs/identifier" },
+    "profile_id": { "$ref": "#/$defs/identifier" },
+    "artifact_set_id": { "$ref": "#/$defs/identifier" },
+    "binding_revision": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._-]+$"
+    }
+  }
+}

@@ -12,13 +12,17 @@ a broad abstract platform.
 
 ## ULAUNCH-MIN-01
 
-- Product registry.
-- Install reference model.
-- Instance model.
-- Profile model.
+- Product registry and reference validation are implemented; durable registry
+  persistence remains.
+- Install reference projection and validation are implemented; persistence
+  remains.
+- Instance reference validation is implemented; product bindings retain full
+  instance specifications.
+- Profile reference validation is implemented.
 - Account reference model.
-- Artifact set model.
-- Launch plan model.
+- Artifact-set reference validation is implemented.
+- Launch-plan binding and staleness projection are implemented; executable
+  plan construction remains product-binding work.
 - Diagnostic report model.
 - Command graph.
 - JSON request/response model.

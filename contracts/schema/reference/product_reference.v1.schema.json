@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://julesc013.github.io/universal-launcher/contracts/schema/reference/product_reference.v1.schema.json",
+  "title": "Universal Launcher product reference",
+  "type": "object",
+  "required": ["schema", "product_id", "binding_id"],
+  "properties": {
+    "schema": { "const": "ulk.product_reference.v1" },
+    "product_id": { "$ref": "#/$defs/identifier" },
+    "binding_id": { "$ref": "#/$defs/identifier" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._-]+$"
+    }
+  }
+}
