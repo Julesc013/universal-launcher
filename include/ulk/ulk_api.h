@@ -6,6 +6,7 @@
 
 #include "ulk_allocator.h"
 #include "ulk_artifact_set.h"
+#include "ulk_client.h"
 #include "ulk_command.h"
 #include "ulk_registry.h"
 #include "ulk_setup_handoff.h"

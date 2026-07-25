@@ -316,7 +316,7 @@ static int test_authority_status(void)
     memset(&status, 0, sizeof(status));
     status.struct_size = sizeof(status);
     CHECK(ulk_setup_authority_status_get_v1(&status) == ULK_STATUS_OK, 60);
-    CHECK(ULK_API_VERSION_MAJOR == 1 && ULK_API_VERSION_MINOR == 3, 65);
+    CHECK(ULK_API_VERSION_MAJOR == 1 && ULK_API_VERSION_MINOR == 4, 65);
     CHECK(status.allowed_operation_mask == 0x3fu, 61);
     CHECK(!status.launcher_can_mutate_setup, 62);
     CHECK(status.mutation_owner.size == strlen("universal-setup"), 63);
