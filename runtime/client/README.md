@@ -17,3 +17,10 @@ transport-owned response views remain borrowed. Their owners must keep them
 valid for every call that can observe them. There is no client disposal call.
 
 Frontend-neutral command clients for CLI, daemon, and C ABI transports.
+
+The additive operation-outcome ABI supplies durable operation/attempt identity
+and fail-closed terminal semantics shared by every transport. Legacy
+`ulk_client_v1` request and response layouts are unchanged. A cancellation or
+timeout after dispatch must preserve a completed provider response or surface
+`outcome_unknown` / `recovery_required`; it cannot claim that no effects
+occurred.

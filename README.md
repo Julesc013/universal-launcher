@@ -3,7 +3,8 @@
 Universal Launcher is the product-agnostic launcher kernel for products, install
 references, instances, profiles, account references, artifact sets, launch plans, command graph,
 dry-run, audit, diagnostics, daemon protocol, and frontend-neutral command
-clients.
+clients. It also owns product-neutral durable operation identity and terminal
+outcome semantics shared by direct, process, and future daemon transports.
 
 It does not install, repair, uninstall, or roll back products. Those operations
 belong to Universal Setup. It also does not contain Factorio-specific discovery,
@@ -99,10 +100,10 @@ cmake --build build/native-smoke
 ```
 
 The current repository is an incremental production kernel. The authoritative
-command graph, Setup handoff, frontend-neutral client/transport ABI, and
-product-neutral reference validation/composition ABI are implemented.
-Reference persistence, daemon runtime, and platform process services remain
-incomplete.
+command graph, Setup handoff, frontend-neutral client/transport ABI,
+product-neutral operation-outcome ABI, and product-neutral reference
+validation/composition ABI are implemented. Reference persistence, daemon
+runtime, and platform process services remain incomplete.
 
 ## License
 
