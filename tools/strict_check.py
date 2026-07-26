@@ -15,6 +15,7 @@ from tools import (
     command_contract_check,
     language_runtime_policy_check,
     license_policy_check,
+    operation_outcome_contract_check,
     reference_model_contract_check,
     setup_handoff_contract_check,
     structure_policy_check,
@@ -27,6 +28,7 @@ def main() -> int:
         ("language-runtime-policy", language_runtime_policy_check.main),
         ("license-policy", license_policy_check.main),
         ("command-contract", command_contract_check.main),
+        ("operation-outcome-contract", operation_outcome_contract_check.main),
         ("setup-handoff-contract", setup_handoff_contract_check.main),
         ("reference-model-contract", reference_model_contract_check.main),
     ]

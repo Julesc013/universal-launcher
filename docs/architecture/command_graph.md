@@ -13,6 +13,12 @@ Each command should declare:
 - redaction policy
 - progress/cancellation behavior when needed
 
+Authority-bearing dispatch also carries the durable identity and terminal
+semantics defined in [Operation Outcomes](operation_outcomes.md). A transport
+may report cancellation without possible effects only before dispatch. After
+dispatch it preserves the provider result or fails closed to an inspectable
+unknown/recovery-required outcome.
+
 No frontend may introduce hidden behavior outside the command graph.
 
 ## Minimal v1 Kernel Commands

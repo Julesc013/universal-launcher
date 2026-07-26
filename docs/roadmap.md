@@ -45,6 +45,17 @@ a broad abstract platform.
   contracts.
 - Keep Factorio-specific facts in FacMan's product binding.
 
+## ULK-OPERATION-OUTCOME-CONTRACT-01
+
+- Require durable operation and attempt identity.
+- Distinguish cancellation before dispatch from cancellation requested after
+  dispatch.
+- Preserve completed provider responses when cancellation loses a race.
+- Treat timeout, transport loss, and unproven post-dispatch cancellation as
+  `outcome_unknown` with effects and recovery inspection declared.
+- Keep direct, process, and future daemon transports semantically identical.
+- Grant no Setup, network, credential, or product-execution authority.
+
 ## SETUP-HANDOFF-01
 
 - Hand install/verify/repair/uninstall/rollback to Universal Setup.

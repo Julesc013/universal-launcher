@@ -1,0 +1,170 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://julesc013.github.io/universal-launcher/contracts/command/operation_outcome.v1.schema.json",
+  "title": "Universal Launcher Operation Outcome",
+  "type": "object",
+  "required": [
+    "schema",
+    "operation_id",
+    "attempt_id",
+    "outcome",
+    "effects_may_have_occurred",
+    "recovery"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ulk.operation_outcome.v1"
+    },
+    "operation_id": {
+      "$ref": "#/$defs/identifier"
+    },
+    "attempt_id": {
+      "$ref": "#/$defs/identifier"
+    },
+    "outcome": {
+      "enum": [
+        "cancelled_before_dispatch",
+        "refused_before_effects",
+        "completed",
+        "cancellation_requested_but_completed",
+        "recovery_required",
+        "outcome_unknown"
+      ]
+    },
+    "effects_may_have_occurred": {
+      "type": "boolean"
+    },
+    "recovery": {
+      "type": "object",
+      "required": [
+        "required",
+        "transaction_id",
+        "inspect_command"
+      ],
+      "properties": {
+        "required": {
+          "type": "boolean"
+        },
+        "transaction_id": {
+          "anyOf": [
+            {
+              "const": ""
+            },
+            {
+              "$ref": "#/$defs/identifier"
+            }
+          ]
+        },
+        "inspect_command": {
+          "type": "string",
+          "maxLength": 128
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "no_recovery": {
+      "properties": {
+        "recovery": {
+          "properties": {
+            "required": {
+              "const": false
+            },
+            "transaction_id": {
+              "const": ""
+            },
+            "inspect_command": {
+              "const": ""
+            }
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "enum": [
+              "cancelled_before_dispatch",
+              "refused_before_effects"
+            ]
+          }
+        },
+        "required": [
+          "outcome"
+        ]
+      },
+      "then": {
+        "properties": {
+          "effects_may_have_occurred": {
+            "const": false
+          }
+        },
+        "$ref": "#/$defs/no_recovery"
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "enum": [
+              "completed",
+              "cancellation_requested_but_completed"
+            ]
+          }
+        },
+        "required": [
+          "outcome"
+        ]
+      },
+      "then": {
+        "$ref": "#/$defs/no_recovery"
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "enum": [
+              "recovery_required",
+              "outcome_unknown"
+            ]
+          }
+        },
+        "required": [
+          "outcome"
+        ]
+      },
+      "then": {
+        "properties": {
+          "effects_may_have_occurred": {
+            "const": true
+          },
+          "recovery": {
+            "properties": {
+              "required": {
+                "const": true
+              },
+              "inspect_command": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$"
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}
