@@ -101,33 +101,91 @@ int main(void)
     if (validation.launch_plan_status != ULK_LAUNCH_PLAN_FRESH) return 3;
     if (!equals(validation.status_code, "valid")) return 4;
 
+    validation.struct_size = sizeof(validation) - 1u;
+    if (ulk_reference_graph_validate_v1(&graph, &validation) != ULK_STATUS_INVALID_ARGUMENT) return 5;
+    validation.struct_size = sizeof(validation);
+    graph.struct_size = sizeof(graph) - 1u;
+    if (ulk_reference_graph_validate_v1(&graph, &validation) != ULK_STATUS_INVALID_ARGUMENT) return 6;
+    if (validation.issue != ULK_REFERENCE_ISSUE_INVALID_GRAPH) return 7;
+    graph.struct_size = sizeof(graph);
+
+    product.struct_size = sizeof(product) - 1u;
+    if (ulk_reference_graph_validate_v1(&graph, &validation) != ULK_STATUS_INVALID_ARGUMENT) return 8;
+    if (validation.issue != ULK_REFERENCE_ISSUE_INVALID_PRODUCT) return 9;
+    product.struct_size = sizeof(product);
+    install_reference.struct_size = sizeof(install_reference) - 1u;
+    if (ulk_reference_graph_validate_v1(&graph, &validation) != ULK_STATUS_INVALID_ARGUMENT) return 10;
+    if (validation.issue != ULK_REFERENCE_ISSUE_INVALID_INSTALL_REFERENCE) return 11;
+    install_reference.struct_size = sizeof(install_reference);
+    instance.struct_size = sizeof(instance) - 1u;
+    if (ulk_reference_graph_validate_v1(&graph, &validation) != ULK_STATUS_INVALID_ARGUMENT) return 12;
+    if (validation.issue != ULK_REFERENCE_ISSUE_INVALID_INSTANCE) return 13;
+    instance.struct_size = sizeof(instance);
+    profile.struct_size = sizeof(profile) - 1u;
+    if (ulk_reference_graph_validate_v1(&graph, &validation) != ULK_STATUS_INVALID_ARGUMENT) return 14;
+    if (validation.issue != ULK_REFERENCE_ISSUE_INVALID_PROFILE) return 15;
+    profile.struct_size = sizeof(profile);
+    artifact_set.struct_size = sizeof(artifact_set) - 1u;
+    if (ulk_reference_graph_validate_v1(&graph, &validation) != ULK_STATUS_INVALID_ARGUMENT) return 16;
+    if (validation.issue != ULK_REFERENCE_ISSUE_INVALID_ARTIFACT_SET) return 17;
+    artifact_set.struct_size = sizeof(artifact_set);
+    launch_plan.struct_size = sizeof(launch_plan) - 1u;
+    if (ulk_reference_graph_validate_v1(&graph, &validation) != ULK_STATUS_INVALID_ARGUMENT) return 18;
+    if (validation.issue != ULK_REFERENCE_ISSUE_INVALID_LAUNCH_PLAN) return 19;
+    launch_plan.struct_size = sizeof(launch_plan);
+
     launch_plan.install_state_revision = view("install-revision-old");
-    if (ulk_reference_graph_validate_v1(&graph, &validation) != ULK_STATUS_OK) return 5;
-    if (!validation.valid || validation.launch_plan_status != ULK_LAUNCH_PLAN_STALE) return 6;
-    if (!equals(validation.status_code, "stale")) return 7;
+    if (ulk_reference_graph_validate_v1(&graph, &validation) != ULK_STATUS_OK) return 20;
+    if (!validation.valid || validation.launch_plan_status != ULK_LAUNCH_PLAN_STALE) return 21;
+    if (!equals(validation.status_code, "stale")) return 22;
     launch_plan.install_state_revision = view("install-revision-1");
 
+    launch_plan.instance_binding_revision = view("binding-revision-old");
+    if (ulk_reference_graph_validate_v1(&graph, &validation) != ULK_STATUS_OK) return 23;
+    if (!validation.valid || validation.launch_plan_status != ULK_LAUNCH_PLAN_STALE) return 24;
+    launch_plan.instance_binding_revision = view("binding-revision-1");
+
     launch_plan.product_id = view("other.product");
-    if (ulk_reference_graph_validate_v1(&graph, &validation) != ULK_STATUS_INVALID_ARGUMENT) return 8;
-    if (validation.valid || validation.issue != ULK_REFERENCE_ISSUE_PRODUCT_MISMATCH) return 9;
-    if (!equals(validation.status_code, "product_mismatch")) return 10;
+    if (ulk_reference_graph_validate_v1(&graph, &validation) != ULK_STATUS_INVALID_ARGUMENT) return 25;
+    if (validation.valid || validation.issue != ULK_REFERENCE_ISSUE_PRODUCT_MISMATCH) return 26;
+    if (!equals(validation.status_code, "product_mismatch")) return 27;
     launch_plan.product_id = view("example.product");
 
+    launch_plan.install_id = view("install.other");
+    if (ulk_reference_graph_validate_v1(&graph, &validation) != ULK_STATUS_INVALID_ARGUMENT) return 28;
+    if (validation.issue != ULK_REFERENCE_ISSUE_INSTALL_MISMATCH) return 29;
+    launch_plan.install_id = view("install.main");
+
+    launch_plan.instance_id = view("instance.other");
+    if (ulk_reference_graph_validate_v1(&graph, &validation) != ULK_STATUS_INVALID_ARGUMENT) return 30;
+    if (validation.issue != ULK_REFERENCE_ISSUE_INSTANCE_MISMATCH) return 31;
+    launch_plan.instance_id = view("instance.main");
+
     instance.profile_id = view("profile.other");
-    if (ulk_reference_graph_validate_v1(&graph, &validation) != ULK_STATUS_INVALID_ARGUMENT) return 11;
-    if (validation.issue != ULK_REFERENCE_ISSUE_PROFILE_MISMATCH) return 12;
+    if (ulk_reference_graph_validate_v1(&graph, &validation) != ULK_STATUS_INVALID_ARGUMENT) return 32;
+    if (validation.issue != ULK_REFERENCE_ISSUE_PROFILE_MISMATCH) return 33;
     instance.profile_id = view("profile.main");
 
+    launch_plan.artifact_set_id = view("artifacts.other");
+    if (ulk_reference_graph_validate_v1(&graph, &validation) != ULK_STATUS_INVALID_ARGUMENT) return 34;
+    if (validation.issue != ULK_REFERENCE_ISSUE_ARTIFACT_SET_MISMATCH) return 35;
+    launch_plan.artifact_set_id = view("artifacts.main");
+
     graph.profile = 0;
-    if (ulk_reference_graph_validate_v1(&graph, &validation) != ULK_STATUS_INVALID_ARGUMENT) return 13;
-    if (validation.issue != ULK_REFERENCE_ISSUE_PROFILE_MISMATCH) return 14;
+    if (ulk_reference_graph_validate_v1(&graph, &validation) != ULK_STATUS_INVALID_ARGUMENT) return 36;
+    if (validation.issue != ULK_REFERENCE_ISSUE_PROFILE_MISMATCH) return 37;
+    instance.profile_id = view(0);
+    launch_plan.profile_id = view(0);
+    if (ulk_reference_graph_validate_v1(&graph, &validation) != ULK_STATUS_OK) return 38;
     graph.profile = &profile;
+    instance.profile_id = view("profile.main");
+    launch_plan.profile_id = view("profile.main");
 
     product.product_id = view("invalid/product");
-    if (ulk_product_ref_validate_v1(&product) != ULK_STATUS_INVALID_ARGUMENT) return 15;
+    if (ulk_product_ref_validate_v1(&product) != ULK_STATUS_INVALID_ARGUMENT) return 39;
     product.product_id = view("example.product");
 
-    if (ulk_reference_graph_validate_v1(0, &validation) != ULK_STATUS_INVALID_ARGUMENT) return 16;
-    if (validation.issue != ULK_REFERENCE_ISSUE_INVALID_GRAPH) return 17;
+    if (ulk_reference_graph_validate_v1(0, &validation) != ULK_STATUS_INVALID_ARGUMENT) return 40;
+    if (validation.issue != ULK_REFERENCE_ISSUE_INVALID_GRAPH) return 41;
     return 0;
 }
