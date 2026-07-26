@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://julesc013.github.io/universal-launcher/contracts/schema/reference/artifact_set_reference.v1.schema.json",
+  "title": "Universal Launcher artifact-set reference",
+  "type": "object",
+  "required": ["schema", "product_id", "artifact_set_id", "lock"],
+  "properties": {
+    "schema": { "const": "ulk.artifact_set_reference.v1" },
+    "product_id": { "$ref": "#/$defs/identifier" },
+    "artifact_set_id": { "$ref": "#/$defs/identifier" },
+    "lock": { "type": "object" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._-]+$"
+    }
+  }
+}

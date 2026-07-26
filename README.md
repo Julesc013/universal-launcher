@@ -99,9 +99,10 @@ cmake --build build/native-smoke
 ```
 
 The current repository is an incremental production kernel. The authoritative
-command graph, Setup handoff, and frontend-neutral client/transport ABI are
-implemented; product-neutral reference persistence, daemon runtime, and
-platform process services remain incomplete.
+command graph, Setup handoff, frontend-neutral client/transport ABI, and
+product-neutral reference validation/composition ABI are implemented.
+Reference persistence, daemon runtime, and platform process services remain
+incomplete.
 
 ## License
 

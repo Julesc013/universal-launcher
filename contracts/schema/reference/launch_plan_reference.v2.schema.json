@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://julesc013.github.io/universal-launcher/contracts/schema/reference/launch_plan_reference.v2.schema.json",
+  "title": "Universal Launcher launch-plan reference",
+  "type": "object",
+  "required": [
+    "schema",
+    "plan_id",
+    "product_id",
+    "instance_id",
+    "install_id",
+    "install_state_revision",
+    "instance_binding_revision",
+    "composition_digest"
+  ],
+  "properties": {
+    "schema": { "const": "ulk.launch_plan_reference.v2" },
+    "plan_id": { "$ref": "#/$defs/identifier" },
+    "product_id": { "$ref": "#/$defs/identifier" },
+    "instance_id": { "$ref": "#/$defs/identifier" },
+    "install_id": { "$ref": "#/$defs/identifier" },
+    "profile_id": { "$ref": "#/$defs/identifier" },
+    "artifact_set_id": { "$ref": "#/$defs/identifier" },
+    "install_state_revision": { "type": "string", "minLength": 1 },
+    "instance_binding_revision": { "type": "string", "minLength": 1 },
+    "composition_digest": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._-]+$"
+    }
+  }
+}

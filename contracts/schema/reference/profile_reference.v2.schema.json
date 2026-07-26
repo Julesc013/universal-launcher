@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://julesc013.github.io/universal-launcher/contracts/schema/reference/profile_reference.v2.schema.json",
+  "title": "Universal Launcher profile reference",
+  "type": "object",
+  "required": ["schema", "profile_id", "product_id", "revision"],
+  "properties": {
+    "schema": { "const": "ulk.profile_reference.v2" },
+    "profile_id": { "$ref": "#/$defs/identifier" },
+    "product_id": { "$ref": "#/$defs/identifier" },
+    "revision": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._-]+$"
+    }
+  }
+}
