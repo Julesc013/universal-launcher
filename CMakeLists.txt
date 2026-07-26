@@ -11,6 +11,7 @@ add_library(ulk_headers INTERFACE)
 target_include_directories(ulk_headers INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 set(ULK_KERNEL_SOURCES
+  runtime/client/ulk_client.c
   runtime/launcher/kernel/ulk_api.c
   runtime/launcher/kernel/ulk_setup_handoff.c
 )
@@ -33,4 +34,7 @@ if(ULK_BUILD_TESTS)
   add_executable(ulk_setup_handoff_smoke tests/native/ulk_setup_handoff_smoke.c)
   target_link_libraries(ulk_setup_handoff_smoke PRIVATE ulk_static)
   add_test(NAME ulk_setup_handoff_smoke COMMAND ulk_setup_handoff_smoke)
+  add_executable(ulk_client_smoke tests/native/ulk_client_smoke.c)
+  target_link_libraries(ulk_client_smoke PRIVATE ulk_static)
+  add_test(NAME ulk_client_smoke COMMAND ulk_client_smoke)
 endif()

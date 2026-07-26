@@ -98,8 +98,10 @@ cmake -S . -B build/native-smoke
 cmake --build build/native-smoke
 ```
 
-The current repository is a canonical bootstrap, not a production launcher
-implementation yet.
+The current repository is an incremental production kernel. The authoritative
+command graph, Setup handoff, and frontend-neutral client/transport ABI are
+implemented; product-neutral reference persistence, daemon runtime, and
+platform process services remain incomplete.
 
 ## License
 

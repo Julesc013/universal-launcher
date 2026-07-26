@@ -17,13 +17,17 @@ class NativeCiProofTests(unittest.TestCase):
         required = [
             "actions/checkout@v6",
             "actions/setup-python@v6",
-            "cmake -S . -B build/smoke",
-            "cmake --build build/smoke",
-            "ctest --test-dir build/smoke --output-on-failure",
+            "cmake -S . -B build/smoke -DCMAKE_BUILD_TYPE=Release",
+            "cmake --build build/smoke --config Release",
+            "ctest --test-dir build/smoke -C Release --output-on-failure",
             "python tools/strict_check.py",
         ]
         positions = [workflow.index(command) for command in required]
         self.assertEqual(positions, sorted(positions))
+        self.assertIn("runs-on: ${{ matrix.os }}", workflow)
+        self.assertIn("fail-fast: false", workflow)
+        for runner in ("ubuntu-latest", "windows-latest", "macos-latest"):
+            self.assertIn(runner, workflow)
         self.assertNotIn("actions/checkout@v4", workflow)
         self.assertNotIn("actions/setup-python@v5", workflow)
 
