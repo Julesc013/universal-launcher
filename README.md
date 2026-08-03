@@ -90,6 +90,18 @@ to reference shell policy only.
 Use `artifact_set` for universal product-associated files. Factorio modsets are
 one product binding's artifact-set semantics, not a universal launcher noun.
 
+## Branch and release train
+
+Universal Launcher uses protected `main` and `dev` branches. `main` is stable
+canonical provider source; `dev` is the continuously integrated next train and
+must always contain `main`. Bounded `task/*` work starts from an exact `dev`
+revision, targets `dev`, passes consumer canaries, and reaches `main` through a
+reviewed promotion. Stable consumers retain exact pins reachable from `main`;
+canary SHAs never rewrite their tracked locks.
+
+See the [repository branch model](docs/governance/branch_model.md) and its
+[machine-readable policy](release/index/branch_policy.v1.toml).
+
 ## Bootstrap Validation
 
 ```powershell
