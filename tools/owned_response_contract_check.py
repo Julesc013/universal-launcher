@@ -30,18 +30,28 @@ def check() -> list[str]:
     architecture_text = architecture.read_text(encoding="utf-8")
 
     for symbol in (
-        "ULK_OWNED_COMMAND_RESPONSE_BYTE_BUDGET_V1",
         "ulk_owned_command_response_v1",
+        "ulk_owned_command_response_options_v1",
         "ulk_command_response_validate_v1",
         "ulk_command_response_copy_owned_v1",
+        "ulk_command_response_copy_owned_with_options_v1",
         "ulk_owned_command_response_release_v1",
     ):
         if symbol not in header_text or symbol not in source_text:
             problems.append(f"owned-response ABI is missing {symbol}")
 
+    for symbol in (
+        "ULK_OWNED_COMMAND_RESPONSE_BYTE_BUDGET_V1",
+        "ULK_OWNED_COMMAND_RESPONSE_DEFAULT_MAXIMUM_TOTAL_BYTES_V1",
+    ):
+        if symbol not in header_text:
+            problems.append(f"owned-response ABI is missing {symbol}")
+
     for invariant in (
         "ulk_owned_size_add",
-        "ULK_OWNED_COMMAND_RESPONSE_BYTE_BUDGET_V1",
+        "ulk_command_response_copy_owned_with_limit",
+        "ULK_OWNED_COMMAND_RESPONSE_DEFAULT_MAXIMUM_TOTAL_BYTES_V1",
+        "maximum_total_bytes",
         "SIZE_MAX",
         "storage_size",
         "effective_allocator.alloc",
@@ -58,6 +68,9 @@ def check() -> list[str]:
         "test_invalid_allocator_and_destination",
         "test_allocation_failure",
         "test_budget_and_overflow",
+        "test_options_validation_and_zero_limit",
+        "test_caller_selected_budget",
+        "test_options_allocator_lifetime_and_failure",
         "test_context_response_sources",
     ):
         if case not in native_text:
@@ -66,6 +79,9 @@ def check() -> list[str]:
     for phrase in (
         "one contiguous allocation",
         "1 MiB",
+        "16 MiB",
+        "no hidden 1 MiB ceiling",
+        "zero permits",
         "idempotent",
         "does not make a context concurrent",
     ):
@@ -123,8 +139,8 @@ def check() -> list[str]:
     minor = re.search(r"#define ULK_API_VERSION_MINOR (\d+)", types_text)
     if major is None or int(major.group(1)) != 1:
         problems.append("owned-response ABI must preserve ULK ABI major 1")
-    if minor is None or int(minor.group(1)) < 7:
-        problems.append("owned-response ABI requires ULK ABI minor 7 or later")
+    if minor is None or int(minor.group(1)) != 7:
+        problems.append("owned-response ABI must remain at pre-acceptance ULK ABI 1.7")
 
     combined = f"{header_text}\n{source_text}".lower()
     for forbidden in ("factorio", "modset", "save file", "setup mutation"):

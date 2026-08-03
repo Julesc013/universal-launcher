@@ -86,6 +86,16 @@ static void ulk_owned_response_reset(ulk_owned_command_response_v1* response)
     response->response.error.struct_size = sizeof(response->response.error);
 }
 
+static int ulk_owned_destination_is_available(
+    const ulk_owned_command_response_v1* destination
+)
+{
+    return
+        destination != 0 &&
+        destination->struct_size >= (ulk_size)sizeof(*destination) &&
+        destination->storage == 0;
+}
+
 int ULK_CALL ulk_command_response_validate_v1(
     const ulk_command_response_v1* response
 )
@@ -104,9 +114,10 @@ int ULK_CALL ulk_command_response_validate_v1(
     return ULK_STATUS_OK;
 }
 
-int ULK_CALL ulk_command_response_copy_owned_v1(
+static int ulk_command_response_copy_owned_with_limit(
     const ulk_command_response_v1* source,
     const ulk_allocator_v1* allocator,
+    ulk_size maximum_total_bytes,
     ulk_owned_command_response_v1* destination
 )
 {
@@ -117,9 +128,7 @@ int ULK_CALL ulk_command_response_copy_owned_v1(
     unsigned char* cursor;
 
     if (
-        destination == 0 ||
-        destination->struct_size < (ulk_size)sizeof(*destination) ||
-        destination->storage != 0
+        !ulk_owned_destination_is_available(destination)
     ) {
         return ULK_STATUS_INVALID_ARGUMENT;
     }
@@ -143,7 +152,7 @@ int ULK_CALL ulk_command_response_copy_owned_v1(
             storage_size,
             source_value.error.detail.size,
             &storage_size) ||
-        storage_size > ULK_OWNED_COMMAND_RESPONSE_BYTE_BUDGET_V1 ||
+        storage_size > maximum_total_bytes ||
         storage_size > (ulk_size)SIZE_MAX
     ) {
         ulk_owned_response_reset(destination);
@@ -205,6 +214,51 @@ int ULK_CALL ulk_command_response_copy_owned_v1(
         destination->response.error.detail.size = source_value.error.detail.size;
     }
     return ULK_STATUS_OK;
+}
+
+int ULK_CALL ulk_command_response_copy_owned_v1(
+    const ulk_command_response_v1* source,
+    const ulk_allocator_v1* allocator,
+    ulk_owned_command_response_v1* destination
+)
+{
+    return ulk_command_response_copy_owned_with_limit(
+        source,
+        allocator,
+        ULK_OWNED_COMMAND_RESPONSE_DEFAULT_MAXIMUM_TOTAL_BYTES_V1,
+        destination);
+}
+
+int ULK_CALL ulk_command_response_copy_owned_with_options_v1(
+    const ulk_command_response_v1* source,
+    const ulk_owned_command_response_options_v1* options,
+    ulk_owned_command_response_v1* destination
+)
+{
+    const ulk_allocator_v1* allocator = 0;
+    ulk_size maximum_total_bytes =
+        ULK_OWNED_COMMAND_RESPONSE_DEFAULT_MAXIMUM_TOTAL_BYTES_V1;
+
+    if (!ulk_owned_destination_is_available(destination)) {
+        return ULK_STATUS_INVALID_ARGUMENT;
+    }
+    if (options != 0) {
+        if (
+            options->struct_size < (ulk_size)sizeof(*options) ||
+            options->maximum_total_bytes > (ulk_size)SIZE_MAX
+        ) {
+            ulk_owned_response_reset(destination);
+            return ULK_STATUS_INVALID_ARGUMENT;
+        }
+        allocator = options->allocator;
+        maximum_total_bytes = options->maximum_total_bytes;
+    }
+
+    return ulk_command_response_copy_owned_with_limit(
+        source,
+        allocator,
+        maximum_total_bytes,
+        destination);
 }
 
 void ULK_CALL ulk_owned_command_response_release_v1(

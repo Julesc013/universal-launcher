@@ -61,6 +61,8 @@ a broad abstract platform.
 - Validate command-response structure and borrowed string views explicitly.
 - Copy payload and error views into one allocator-owned, budgeted block.
 - Reject overflow and over-budget responses before allocation or copying.
+- Preserve the 1 MiB convenience boundary while allowing an explicit,
+  platform-representable caller-selected aggregate limit.
 - Make release idempotent and independent of source context lifetime.
 - Preserve the existing borrowed command and client ABIs.
 

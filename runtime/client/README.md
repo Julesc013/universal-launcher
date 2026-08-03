@@ -24,6 +24,13 @@ block. `ulk_owned_command_response_release_v1` is idempotent and does not
 depend on the producer remaining alive. Existing borrowed client and command
 response layouts are unchanged.
 
+The convenience copy retains a 1 MiB aggregate limit. The additive
+`ulk_command_response_copy_owned_with_options_v1` entry point accepts a
+caller-selected exact limit with no hidden 1 MiB ceiling. Null options select
+the convenience defaults; an explicit zero limit accepts only a zero-byte
+result. All aggregate overflow, selected-limit, and platform-representability
+checks occur before allocation or source-byte copying.
+
 Frontend-neutral command clients for CLI, daemon, and C ABI transports.
 
 The additive operation-outcome ABI supplies durable operation/attempt identity

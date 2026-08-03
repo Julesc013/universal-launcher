@@ -3,6 +3,7 @@
 
 #include "ulk/ulk_api.h"
 
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -110,6 +111,35 @@ static ulk_allocator_v1 allocator_for(allocation_state* state)
     allocator.alloc = counting_alloc;
     allocator.free = counting_free;
     return allocator;
+}
+
+static ulk_owned_command_response_options_v1 options_for(
+    const ulk_allocator_v1* allocator,
+    ulk_size maximum_total_bytes
+)
+{
+    ulk_owned_command_response_options_v1 options;
+    memset(&options, 0, sizeof(options));
+    options.struct_size = sizeof(options);
+    options.allocator = allocator;
+    options.maximum_total_bytes = maximum_total_bytes;
+    return options;
+}
+
+static int copy_with_ephemeral_options(
+    const ulk_command_response_v1* source,
+    allocation_state* state,
+    ulk_size maximum_total_bytes,
+    ulk_owned_command_response_v1* destination
+)
+{
+    ulk_allocator_v1 allocator = allocator_for(state);
+    ulk_owned_command_response_options_v1 options =
+        options_for(&allocator, maximum_total_bytes);
+    return ulk_command_response_copy_owned_with_options_v1(
+        source,
+        &options,
+        destination);
 }
 
 static int test_validation(void)
@@ -381,6 +411,7 @@ static int test_budget_and_overflow(void)
 {
     allocation_state state;
     ulk_allocator_v1 allocator;
+    ulk_owned_command_response_options_v1 options;
     ulk_command_response_v1 source;
     ulk_owned_command_response_v1 owned;
     char* exact_budget;
@@ -466,6 +497,268 @@ static int test_budget_and_overflow(void)
             ULK_STATUS_INVALID_ARGUMENT,
         124);
     CHECK(state.allocation_calls == 0 && owned.storage == 0, 125);
+
+    options = options_for(&allocator, (ulk_size)SIZE_MAX);
+    fill_response(
+        &source,
+        ULK_STATUS_OK,
+        view_bytes(&byte, (ulk_size)-1),
+        view_bytes(&byte, 2u),
+        view(0));
+    prepare_owned(&owned);
+    CHECK(
+        ulk_command_response_copy_owned_with_options_v1(
+            &source,
+            &options,
+            &owned) == ULK_STATUS_INVALID_ARGUMENT,
+        126);
+    CHECK(state.allocation_calls == 0 && owned.storage == 0, 127);
+
+    fill_response(
+        &source,
+        ULK_STATUS_OK,
+        view_bytes(&byte, (ulk_size)-2),
+        view_bytes(&byte, 1u),
+        view_bytes(&byte, 2u));
+    prepare_owned(&owned);
+    CHECK(
+        ulk_command_response_copy_owned_with_options_v1(
+            &source,
+            &options,
+            &owned) == ULK_STATUS_INVALID_ARGUMENT,
+        128);
+    CHECK(state.allocation_calls == 0 && owned.storage == 0, 129);
+    return 0;
+}
+
+static int test_options_validation_and_zero_limit(void)
+{
+    allocation_state state;
+    ulk_allocator_v1 allocator;
+    ulk_owned_command_response_options_v1 options;
+    ulk_command_response_v1 source;
+    ulk_owned_command_response_v1 owned;
+
+    memset(&state, 0, sizeof(state));
+    allocator = allocator_for(&state);
+    options = options_for(&allocator, 0u);
+    fill_response(
+        &source,
+        ULK_STATUS_ERROR,
+        view(0),
+        view(0),
+        view(0));
+    source.error.code = 934;
+    prepare_owned(&owned);
+
+    CHECK(
+        ulk_command_response_copy_owned_with_options_v1(
+            &source,
+            &options,
+            &owned) == ULK_STATUS_OK,
+        130);
+    CHECK(state.allocation_calls == 0, 131);
+    CHECK(owned.storage == 0 && owned.storage_size == 0u, 132);
+    CHECK(
+        owned.response.status == ULK_STATUS_ERROR &&
+        owned.response.error.code == 934,
+        133);
+    ulk_owned_command_response_release_v1(&owned);
+    CHECK(state.free_calls == 0, 134);
+
+    fill_response(
+        &source,
+        ULK_STATUS_OK,
+        view("x"),
+        view(0),
+        view(0));
+    prepare_owned(&owned);
+    CHECK(
+        ulk_command_response_copy_owned_with_options_v1(
+            &source,
+            &options,
+            &owned) == ULK_STATUS_INVALID_ARGUMENT,
+        135);
+    CHECK(state.allocation_calls == 0 && owned.storage == 0, 136);
+
+    options.struct_size = sizeof(options) - 1u;
+    owned.response.status = 99;
+    CHECK(
+        ulk_command_response_copy_owned_with_options_v1(
+            &source,
+            &options,
+            &owned) == ULK_STATUS_INVALID_ARGUMENT,
+        137);
+    CHECK(
+        owned.response.status == 0 &&
+        owned.response.struct_size == sizeof(owned.response) &&
+        owned.response.error.struct_size == sizeof(owned.response.error),
+        138);
+
+    prepare_owned(&owned);
+    CHECK(
+        ulk_command_response_copy_owned_with_options_v1(
+            &source,
+            0,
+            &owned) == ULK_STATUS_OK,
+        139);
+    CHECK(owned.storage_size == 1u, 140);
+    ulk_owned_command_response_release_v1(&owned);
+
+    options = options_for(0, 1u);
+    prepare_owned(&owned);
+    CHECK(
+        ulk_command_response_copy_owned_with_options_v1(
+            &source,
+            &options,
+            &owned) == ULK_STATUS_OK,
+        141);
+    CHECK(owned.storage_size == 1u, 142);
+    ulk_owned_command_response_release_v1(&owned);
+
+    if ((ulk_size)SIZE_MAX < (ulk_size)-1) {
+        options.maximum_total_bytes = (ulk_size)SIZE_MAX + 1u;
+        prepare_owned(&owned);
+        CHECK(
+            ulk_command_response_copy_owned_with_options_v1(
+                &source,
+                &options,
+                &owned) == ULK_STATUS_INVALID_ARGUMENT,
+            143);
+        CHECK(owned.storage == 0, 144);
+    }
+    return 0;
+}
+
+static int test_caller_selected_budget(void)
+{
+    const ulk_size large_limit = (ulk_size)(16u * 1024u * 1024u);
+    allocation_state state;
+    ulk_allocator_v1 allocator;
+    ulk_owned_command_response_options_v1 options;
+    ulk_command_response_v1 source;
+    ulk_owned_command_response_v1 owned;
+    char* large_source;
+
+    memset(&state, 0, sizeof(state));
+    allocator = allocator_for(&state);
+    options = options_for(&allocator, 9u);
+    fill_response(
+        &source,
+        ULK_STATUS_ERROR,
+        view_bytes("abc", 3u),
+        view_bytes("de", 2u),
+        view_bytes("fghi", 4u));
+    prepare_owned(&owned);
+    CHECK(
+        ulk_command_response_copy_owned_with_options_v1(
+            &source,
+            &options,
+            &owned) == ULK_STATUS_OK,
+        145);
+    CHECK(state.allocation_calls == 1 && state.last_size == 9u, 146);
+    CHECK(owned.storage_size == 9u, 147);
+    ulk_owned_command_response_release_v1(&owned);
+    CHECK(state.free_calls == 1, 148);
+
+    options.maximum_total_bytes = 8u;
+    prepare_owned(&owned);
+    CHECK(
+        ulk_command_response_copy_owned_with_options_v1(
+            &source,
+            &options,
+            &owned) == ULK_STATUS_INVALID_ARGUMENT,
+        149);
+    CHECK(state.allocation_calls == 1 && owned.storage == 0, 150);
+
+    large_source = (char*)malloc((size_t)(large_limit + 1u));
+    CHECK(large_source != 0, 151);
+    memset(large_source, 'L', (size_t)(large_limit + 1u));
+    options.maximum_total_bytes = large_limit;
+    fill_response(
+        &source,
+        ULK_STATUS_OK,
+        view_bytes(large_source, large_limit),
+        view(0),
+        view(0));
+    prepare_owned(&owned);
+    CHECK(
+        ulk_command_response_copy_owned_with_options_v1(
+            &source,
+            &options,
+            &owned) == ULK_STATUS_OK,
+        152);
+    CHECK(
+        state.allocation_calls == 2 && state.last_size == large_limit,
+        153);
+    CHECK(
+        owned.response.json_payload.size == large_limit &&
+        owned.response.json_payload.data[0] == 'L' &&
+        owned.response.json_payload.data[large_limit - 1u] == 'L',
+        154);
+    ulk_owned_command_response_release_v1(&owned);
+    CHECK(state.free_calls == 2, 155);
+
+    source.json_payload.size = large_limit + 1u;
+    prepare_owned(&owned);
+    CHECK(
+        ulk_command_response_copy_owned_with_options_v1(
+            &source,
+            &options,
+            &owned) == ULK_STATUS_INVALID_ARGUMENT,
+        156);
+    CHECK(state.allocation_calls == 2 && owned.storage == 0, 157);
+
+    source.json_payload.size = large_limit;
+    prepare_owned(&owned);
+    CHECK(
+        ulk_command_response_copy_owned_v1(&source, &allocator, &owned) ==
+            ULK_STATUS_INVALID_ARGUMENT,
+        158);
+    CHECK(state.allocation_calls == 2 && owned.storage == 0, 159);
+    free(large_source);
+    return 0;
+}
+
+static int test_options_allocator_lifetime_and_failure(void)
+{
+    allocation_state state;
+    ulk_command_response_v1 source;
+    ulk_owned_command_response_v1 owned;
+    char payload[] = {'s', 'o', 'u', 'r', 'c', 'e'};
+
+    memset(&state, 0, sizeof(state));
+    state.fail_on_call = 1;
+    fill_response(
+        &source,
+        ULK_STATUS_OK,
+        view_bytes(payload, sizeof(payload)),
+        view(0),
+        view(0));
+    prepare_owned(&owned);
+    CHECK(
+        copy_with_ephemeral_options(&source, &state, sizeof(payload), &owned) ==
+            ULK_STATUS_ERROR,
+        160);
+    CHECK(state.allocation_calls == 1 && state.free_calls == 0, 161);
+    CHECK(owned.storage == 0 && owned.storage_size == 0u, 162);
+    ulk_owned_command_response_release_v1(&owned);
+    ulk_owned_command_response_release_v1(&owned);
+    CHECK(state.free_calls == 0, 163);
+
+    memset(&state, 0, sizeof(state));
+    prepare_owned(&owned);
+    CHECK(
+        copy_with_ephemeral_options(&source, &state, sizeof(payload), &owned) ==
+            ULK_STATUS_OK,
+        164);
+    CHECK(state.allocation_calls == 1, 165);
+    memset(payload, 'x', sizeof(payload));
+    CHECK(view_equals(owned.response.json_payload, "source", 6u), 166);
+    ulk_owned_command_response_release_v1(&owned);
+    CHECK(state.free_calls == 1, 167);
+    ulk_owned_command_response_release_v1(&owned);
+    CHECK(state.free_calls == 1, 168);
     return 0;
 }
 
@@ -608,6 +901,12 @@ int main(void)
     status = test_allocation_failure();
     if (status != 0) return status;
     status = test_budget_and_overflow();
+    if (status != 0) return status;
+    status = test_options_validation_and_zero_limit();
+    if (status != 0) return status;
+    status = test_caller_selected_budget();
+    if (status != 0) return status;
+    status = test_options_allocator_lifetime_and_failure();
     if (status != 0) return status;
     return test_context_response_sources();
 }
