@@ -639,6 +639,7 @@ static int test_caller_selected_budget(void)
     ulk_command_response_v1 source;
     ulk_owned_command_response_v1 owned;
     char* large_source;
+    int copy_status;
 
     memset(&state, 0, sizeof(state));
     allocator = allocator_for(&state);
@@ -698,6 +699,17 @@ static int test_caller_selected_budget(void)
         154);
     ulk_owned_command_response_release_v1(&owned);
     CHECK(state.free_calls == 2, 155);
+
+    prepare_owned(&owned);
+    copy_status = ulk_command_response_copy_owned_with_options_v1(
+        &source,
+        0,
+        &owned);
+    if (copy_status == ULK_STATUS_OK) {
+        ulk_owned_command_response_release_v1(&owned);
+    }
+    CHECK(copy_status == ULK_STATUS_INVALID_ARGUMENT, 169);
+    CHECK(owned.storage == 0, 170);
 
     source.json_payload.size = large_limit + 1u;
     prepare_owned(&owned);
