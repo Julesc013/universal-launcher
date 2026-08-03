@@ -155,6 +155,7 @@ def check_required_paths() -> list[str]:
         ROOT / "runtime" / "client" / "ulk_operation.c",
         ROOT / "runtime" / "client" / "ulk_owned_response.c",
         ROOT / "runtime" / "launcher" / "kernel" / "ulk_reference_model.c",
+        ROOT / "contracts" / "abi" / "ulk_c_abi.v1.toml",
         ROOT / "runtime" / "launcher" / "artifact_set" / "README.md",
         ROOT / "contracts" / "schema" / "command" / "command_request.v1.schema.json",
         ROOT / "contracts" / "schema" / "command" / "client_transport.v1.schema.json",
@@ -168,6 +169,11 @@ def check_required_paths() -> list[str]:
         ROOT / "docs" / "architecture" / "owned_responses.md",
         ROOT / "docs" / "architecture" / "root_grammar.md",
         ROOT / "docs" / "roadmap.md",
+        ROOT / "tests" / "compat" / "ulk_abi_1_6" / "ulk_client_api_1_6.h",
+        ROOT / "tests" / "native" / "ulk_abi_1_6_client_compat_smoke.c",
+        ROOT / "tests" / "native" / "ulk_abi_layout_smoke.c",
+        ROOT / "tests" / "native" / "ulk_owned_response_export_smoke.c",
+        ROOT / "tools" / "abi_contract_check.py",
     ]
     return [f"missing required path {path.relative_to(ROOT)}" for path in required if not path.exists()]
 

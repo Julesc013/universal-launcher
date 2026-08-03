@@ -53,3 +53,13 @@ operation-outcome rules after dispatch.
 The copy function reports response materialization only. Rejection or
 allocation failure does not change the borrowed source and is not evidence
 about whether a command produced effects.
+
+## Compatibility proof
+
+`contracts/abi/ulk_c_abi.v1.toml` binds the reviewed ABI 1.6 base, the exact
+ABI 1.7 public symbol set, and the field order of borrowed and owned C
+structures. Native proof compares the current borrowed layouts with frozen
+ABI 1.6 layouts, links the owned-response surface through the shared library,
+and runs a client compiled only from frozen ABI 1.6 declarations against the
+current library. The caller-selected budget addition does not change the ABI
+minor because it is part of the pre-acceptance ABI 1.7 review train.

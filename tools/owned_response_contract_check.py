@@ -93,6 +93,7 @@ def check() -> list[str]:
         "runtime/client/ulk_owned_response.c",
         "tests/native/ulk_owned_response_smoke.c",
         "add_test(NAME ulk_owned_response_smoke",
+        "add_test(NAME ulk_owned_response_export_smoke",
     ):
         if anchor not in cmake_text:
             problems.append(f"owned-response CMake wiring is missing {anchor}")
