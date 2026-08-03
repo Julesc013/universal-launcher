@@ -245,13 +245,18 @@ int ULK_CALL ulk_command_response_copy_owned_with_options_v1(
     if (options != 0) {
         if (
             options->struct_size < (ulk_size)sizeof(*options) ||
-            options->maximum_total_bytes > (ulk_size)SIZE_MAX
+            (
+                options->maximum_total_bytes != 0u &&
+                options->maximum_total_bytes > (ulk_size)SIZE_MAX
+            )
         ) {
             ulk_owned_response_reset(destination);
             return ULK_STATUS_INVALID_ARGUMENT;
         }
         allocator = options->allocator;
-        maximum_total_bytes = options->maximum_total_bytes;
+        if (options->maximum_total_bytes != 0u) {
+            maximum_total_bytes = options->maximum_total_bytes;
+        }
     }
 
     return ulk_command_response_copy_owned_with_limit(

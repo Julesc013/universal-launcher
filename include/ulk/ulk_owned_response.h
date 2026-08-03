@@ -66,12 +66,12 @@ ULK_API void ULK_CALL ulk_owned_command_response_release_v1(
  * its 1 MiB aggregate byte limit. The options entry point accepts a null
  * options pointer for the same defaults. A non-null options object must set
  * struct_size. Its null allocator selects the library default, while
- * maximum_total_bytes is the caller's exact aggregate limit: zero accepts
- * only an empty response. A non-null options limit must also fit the current
- * platform's addressable size. The options and allocator structures are
- * borrowed only for the call. Custom allocator callback code and user state
- * must remain valid until release because the callback values are copied into
- * the owner.
+ * maximum_total_bytes selects the 1 MiB default when zero and otherwise is the
+ * caller's exact aggregate limit. A nonzero options limit must also fit the
+ * current platform's addressable size. The options and allocator structures
+ * are borrowed only for the call. Custom allocator callback code and user
+ * state must remain valid until release because the callback values are copied
+ * into the owner.
  */
 
 #ifdef __cplusplus

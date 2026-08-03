@@ -68,7 +68,7 @@ def check() -> list[str]:
         "test_invalid_allocator_and_destination",
         "test_allocation_failure",
         "test_budget_and_overflow",
-        "test_options_validation_and_zero_limit",
+        "test_options_validation_and_default_limit",
         "test_caller_selected_budget",
         "test_options_allocator_lifetime_and_failure",
         "test_context_response_sources",
@@ -81,7 +81,7 @@ def check() -> list[str]:
         "1 MiB",
         "16 MiB",
         "no hidden 1 MiB ceiling",
-        "zero permits",
+        "default when zero",
         "idempotent",
         "does not make a context concurrent",
     ):

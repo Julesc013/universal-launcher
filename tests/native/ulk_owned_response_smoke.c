@@ -453,6 +453,20 @@ static int test_budget_and_overflow(void)
         64);
     ulk_owned_command_response_release_v1(&owned);
     CHECK(state.free_calls == 1, 65);
+
+    options = options_for(&allocator, 0u);
+    prepare_owned(&owned);
+    CHECK(
+        ulk_command_response_copy_owned_with_options_v1(
+            &source,
+            &options,
+            &owned) == ULK_STATUS_OK,
+        171);
+    CHECK(
+        state.last_size == ULK_OWNED_COMMAND_RESPONSE_BYTE_BUDGET_V1,
+        172);
+    ulk_owned_command_response_release_v1(&owned);
+    CHECK(state.free_calls == 2, 173);
     free(exact_budget);
 
     memset(&state, 0, sizeof(state));
@@ -471,6 +485,16 @@ static int test_budget_and_overflow(void)
             ULK_STATUS_INVALID_ARGUMENT,
         66);
     CHECK(state.allocation_calls == 0 && owned.storage == 0, 67);
+
+    options = options_for(&allocator, 0u);
+    prepare_owned(&owned);
+    CHECK(
+        ulk_command_response_copy_owned_with_options_v1(
+            &source,
+            &options,
+            &owned) == ULK_STATUS_INVALID_ARGUMENT,
+        174);
+    CHECK(state.allocation_calls == 0 && owned.storage == 0, 175);
 
     fill_response(
         &source,
@@ -531,7 +555,7 @@ static int test_budget_and_overflow(void)
     return 0;
 }
 
-static int test_options_validation_and_zero_limit(void)
+static int test_options_validation_and_default_limit(void)
 {
     allocation_state state;
     ulk_allocator_v1 allocator;
@@ -577,9 +601,10 @@ static int test_options_validation_and_zero_limit(void)
         ulk_command_response_copy_owned_with_options_v1(
             &source,
             &options,
-            &owned) == ULK_STATUS_INVALID_ARGUMENT,
+            &owned) == ULK_STATUS_OK,
         135);
-    CHECK(state.allocation_calls == 0 && owned.storage == 0, 136);
+    CHECK(state.allocation_calls == 1 && owned.storage_size == 1u, 136);
+    ulk_owned_command_response_release_v1(&owned);
 
     options.struct_size = sizeof(options) - 1u;
     owned.response.status = 99;
@@ -914,7 +939,7 @@ int main(void)
     if (status != 0) return status;
     status = test_budget_and_overflow();
     if (status != 0) return status;
-    status = test_options_validation_and_zero_limit();
+    status = test_options_validation_and_default_limit();
     if (status != 0) return status;
     status = test_caller_selected_budget();
     if (status != 0) return status;

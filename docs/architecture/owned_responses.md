@@ -29,8 +29,8 @@ unrepresentable, or overflowing response is rejected before allocation.
 
 For the options entry point, a null options pointer selects the same default
 allocator and 1 MiB limit as the convenience function. A non-null options
-object must set `struct_size`. Its `maximum_total_bytes` is exact: zero permits
-only a response with zero copied bytes. There is no hidden 1 MiB ceiling on
+object must set `struct_size`. Its `maximum_total_bytes` selects the 1 MiB
+default when zero and is otherwise exact. There is no hidden 1 MiB ceiling on
 this path; for example, a caller may explicitly permit 16 MiB when the platform
 can represent it.
 

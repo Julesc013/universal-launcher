@@ -27,9 +27,10 @@ response layouts are unchanged.
 The convenience copy retains a 1 MiB aggregate limit. The additive
 `ulk_command_response_copy_owned_with_options_v1` entry point accepts a
 caller-selected exact limit with no hidden 1 MiB ceiling. Null options select
-the convenience defaults; an explicit zero limit accepts only a zero-byte
-result. All aggregate overflow, selected-limit, and platform-representability
-checks occur before allocation or source-byte copying.
+the convenience defaults; a zero-initialized options limit selects the same
+1 MiB default. Any nonzero limit is exact. All aggregate overflow,
+selected-limit, and platform-representability checks occur before allocation
+or source-byte copying.
 
 Frontend-neutral command clients for CLI, daemon, and C ABI transports.
 
