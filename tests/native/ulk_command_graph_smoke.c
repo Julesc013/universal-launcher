@@ -165,7 +165,7 @@ static void fill_descriptor_v2(
     descriptor->handler = registered_handler;
 }
 
-static void* counting_alloc(void* user, ulk_size size)
+static void* ULK_CALL counting_alloc(void* user, ulk_size size)
 {
     allocator_state* state = (allocator_state*)user;
     void* result;
@@ -179,7 +179,7 @@ static void* counting_alloc(void* user, ulk_size size)
     return result;
 }
 
-static void counting_free(void* user, void* ptr)
+static void ULK_CALL counting_free(void* user, void* ptr)
 {
     allocator_state* state = (allocator_state*)user;
     if (ptr != 0) {

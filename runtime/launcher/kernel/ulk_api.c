@@ -149,13 +149,13 @@ static const ulk_command_metadata ULK_BUILTIN_COMMANDS[] = {
 #define ULK_BUILTIN_COMMAND_COUNT \
     ((ulk_size)(sizeof(ULK_BUILTIN_COMMANDS) / sizeof(ULK_BUILTIN_COMMANDS[0])))
 
-static void* ulk_default_alloc(void* user, ulk_size size)
+static void* ULK_CALL ulk_default_alloc(void* user, ulk_size size)
 {
     (void)user;
     return malloc((size_t)size);
 }
 
-static void ulk_default_free(void* user, void* ptr)
+static void ULK_CALL ulk_default_free(void* user, void* ptr)
 {
     (void)user;
     free(ptr);
