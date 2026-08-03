@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -119,8 +120,9 @@ def check() -> list[str]:
     types = (ROOT / "include" / "ulk" / "ulk_types.h").read_text(encoding="utf-8")
     if "#define ULK_API_VERSION_MAJOR 1" not in types:
         problems.append("operation-outcome contract must preserve ULK ABI major 1")
-    if "#define ULK_API_VERSION_MINOR 6" not in types:
-        problems.append("operation-outcome contract must publish ULK ABI minor 6")
+    minor = re.search(r"#define ULK_API_VERSION_MINOR (\d+)", types)
+    if minor is None or int(minor.group(1)) < 6:
+        problems.append("operation-outcome contract requires ULK ABI minor 6 or later")
     return problems
 
 

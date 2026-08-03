@@ -1,0 +1,55 @@
+// SPDX-FileCopyrightText: 2026 Jules C
+// SPDX-License-Identifier: MIT
+
+#ifndef ULK_OWNED_RESPONSE_H
+#define ULK_OWNED_RESPONSE_H
+
+#include "ulk_allocator.h"
+#include "ulk_command.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#define ULK_OWNED_COMMAND_RESPONSE_BYTE_BUDGET_V1 \
+    ((ulk_size)(1024u * 1024u))
+
+typedef struct ulk_owned_command_response_v1 {
+    ulk_size struct_size;
+    ulk_command_response_v1 response;
+    ulk_allocator_v1 allocator;
+    void* storage;
+    ulk_size storage_size;
+} ulk_owned_command_response_v1;
+
+ULK_API int ULK_CALL ulk_command_response_validate_v1(
+    const ulk_command_response_v1* response
+);
+
+ULK_API int ULK_CALL ulk_command_response_copy_owned_v1(
+    const ulk_command_response_v1* source,
+    const ulk_allocator_v1* allocator,
+    ulk_owned_command_response_v1* destination
+);
+
+ULK_API void ULK_CALL ulk_owned_command_response_release_v1(
+    ulk_owned_command_response_v1* response
+);
+
+/*
+ * Copying preserves the exact byte lengths of the payload, error message, and
+ * error detail in one allocator-owned block. The source may be released or
+ * invalidated as soon as copying succeeds.
+ *
+ * Callers zero-initialize destination and set destination.struct_size before
+ * copying. A destination that already owns storage must be released first.
+ * Release is idempotent and does not require the source context or transport
+ * to remain alive. An owned response must not be copied by value because its
+ * storage has exactly one owner.
+ */
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

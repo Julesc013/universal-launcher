@@ -13,6 +13,7 @@ target_include_directories(ulk_headers INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/in
 set(ULK_KERNEL_SOURCES
   runtime/client/ulk_client.c
   runtime/client/ulk_operation.c
+  runtime/client/ulk_owned_response.c
   runtime/launcher/kernel/ulk_api.c
   runtime/launcher/kernel/ulk_reference_model.c
   runtime/launcher/kernel/ulk_setup_handoff.c
@@ -42,6 +43,9 @@ if(ULK_BUILD_TESTS)
   add_executable(ulk_operation_outcome_smoke tests/native/ulk_operation_outcome_smoke.c)
   target_link_libraries(ulk_operation_outcome_smoke PRIVATE ulk_static)
   add_test(NAME ulk_operation_outcome_smoke COMMAND ulk_operation_outcome_smoke)
+  add_executable(ulk_owned_response_smoke tests/native/ulk_owned_response_smoke.c)
+  target_link_libraries(ulk_owned_response_smoke PRIVATE ulk_static)
+  add_test(NAME ulk_owned_response_smoke COMMAND ulk_owned_response_smoke)
   add_executable(ulk_reference_model_smoke tests/native/ulk_reference_model_smoke.c)
   target_link_libraries(ulk_reference_model_smoke PRIVATE ulk_static)
   add_test(NAME ulk_reference_model_smoke COMMAND ulk_reference_model_smoke)

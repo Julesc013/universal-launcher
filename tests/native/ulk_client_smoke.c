@@ -29,6 +29,7 @@ static int ULK_CALL execute(
     state->request = request;
     response->status = ULK_STATUS_OK;
     response->json_payload = view("{\"status\":\"ok\"}");
+    response->error.struct_size = sizeof(response->error);
     return ULK_STATUS_OK;
 }
 
@@ -92,6 +93,7 @@ int main(void)
     if (ulk_client_execute_v1(&client, &request, &response) != ULK_STATUS_OK) return 10;
     if (state.calls != 1 || state.request != &request) return 11;
     if (response.status != ULK_STATUS_OK) return 12;
+    if (ulk_command_response_validate_v1(&response) != ULK_STATUS_OK) return 30;
 
     request.command_name = view(0);
     if (ulk_client_execute_v1(&client, &request, &response) != ULK_STATUS_INVALID_ARGUMENT) return 13;

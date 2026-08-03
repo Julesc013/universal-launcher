@@ -9,6 +9,7 @@
 #include "ulk_client.h"
 #include "ulk_command.h"
 #include "ulk_operation.h"
+#include "ulk_owned_response.h"
 #include "ulk_reference_model.h"
 #include "ulk_registry.h"
 #include "ulk_setup_handoff.h"
