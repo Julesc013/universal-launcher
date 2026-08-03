@@ -22,9 +22,13 @@ typedef struct ulk_command_response_v1 {
 } ulk_command_response_v1;
 
 /*
- * Response string views are borrowed. They remain valid until the next
- * command call on the same context or until that context is destroyed.
- * Callers set response.struct_size before every call. No disposal is required.
+ * Response string views are borrowed; their lifetime is defined by the
+ * producing API or callback. Built-in context responses remain valid until
+ * the next command call on that context or until the context is destroyed.
+ * Registered-handler and transport views retain their producer's declared
+ * lifetime. Callers set response.struct_size before every call. No disposal is
+ * required. The additive owned-response ABI can validate and immediately copy
+ * valid views when a caller needs an independent lifetime.
  */
 
 #endif

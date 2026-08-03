@@ -1,0 +1,128 @@
+# SPDX-FileCopyrightText: 2026 Jules C
+# SPDX-License-Identifier: MIT
+
+schema = "ulk.c_abi_snapshot.v1"
+abi_major = 1
+abi_minor = 7
+compatibility_base_sha = "7f4312faf2f1ac2856a51393fef0ec49fc276a78"
+
+exports = [
+  "ulk_abi_version_v1",
+  "ulk_artifact_set_ref_validate_v1",
+  "ulk_client_execute_v1",
+  "ulk_client_initialize_v1",
+  "ulk_command_execute_v1",
+  "ulk_command_register_v1",
+  "ulk_command_register_v2",
+  "ulk_command_response_copy_owned_v1",
+  "ulk_command_response_copy_owned_with_options_v1",
+  "ulk_command_response_validate_v1",
+  "ulk_command_unregister_v1",
+  "ulk_context_create_v1",
+  "ulk_context_destroy_v1",
+  "ulk_dependent_instance_status_code_v1",
+  "ulk_install_reference_validate_v2",
+  "ulk_instance_ref_validate_v2",
+  "ulk_launch_plan_install_status_v1",
+  "ulk_launch_plan_ref_validate_v2",
+  "ulk_operation_identity_validate_v1",
+  "ulk_operation_outcome_name_v1",
+  "ulk_operation_result_validate_v1",
+  "ulk_owned_command_response_release_v1",
+  "ulk_product_ref_validate_v1",
+  "ulk_profile_ref_validate_v2",
+  "ulk_reference_graph_validate_v1",
+  "ulk_setup_apply_request_validate_v1",
+  "ulk_setup_authority_status_get_v1",
+  "ulk_setup_result_project_v1",
+  "ulk_transport_kind_name_v1",
+]
+
+[layouts.ulk_string_view]
+fields = ["const char* data", "ulk_size size"]
+
+[layouts.ulk_allocator_v1]
+fields = [
+  "ulk_size struct_size",
+  "void* user",
+  "ulk_alloc_fn_v1 alloc",
+  "ulk_free_fn_v1 free",
+]
+
+[layouts.ulk_error_v1]
+fields = [
+  "ulk_size struct_size",
+  "int code",
+  "ulk_string_view message",
+  "ulk_string_view detail",
+]
+
+[layouts.ulk_command_request_v1]
+fields = [
+  "ulk_size struct_size",
+  "ulk_string_view command_name",
+  "ulk_string_view json_payload",
+  "ulk_bool dry_run",
+]
+
+[layouts.ulk_command_response_v1]
+fields = [
+  "ulk_size struct_size",
+  "int status",
+  "ulk_string_view json_payload",
+  "ulk_error_v1 error",
+]
+
+[layouts.ulk_transport_adapter_v1]
+fields = [
+  "ulk_size struct_size",
+  "ulk_transport_kind_v1 kind",
+  "ulk_string_view revision",
+  "ulk_transport_execute_fn_v1 execute",
+  "void* user_data",
+]
+
+[layouts.ulk_client_v1]
+fields = ["ulk_size struct_size", "ulk_transport_adapter_v1 transport"]
+
+[layouts.ulk_command_descriptor_v1]
+fields = [
+  "ulk_size struct_size",
+  "ulk_string_view command_name",
+  "ulk_string_view effects_json",
+  "void* user",
+  "ulk_command_handler_v1 handler",
+]
+
+[layouts.ulk_command_descriptor_v2]
+fields = [
+  "ulk_size struct_size",
+  "ulk_string_view command_name",
+  "ulk_string_view effects_json",
+  "ulk_string_view request_schema",
+  "ulk_string_view response_schema",
+  "ulk_string_view result_schema",
+  "ulk_string_view refusal_schema",
+  "ulk_string_view dry_run_behavior",
+  "ulk_string_view availability",
+  "ulk_string_view owner",
+  "ulk_string_view binding",
+  "void* user",
+  "ulk_command_handler_v1 handler",
+]
+
+[layouts.ulk_owned_command_response_v1]
+fields = [
+  "ulk_size struct_size",
+  "ulk_command_response_v1 response",
+  "ulk_allocator_v1 allocator",
+  "void* storage",
+  "ulk_size storage_size",
+]
+
+[layouts.ulk_owned_command_response_options_v1]
+fields = [
+  "ulk_size struct_size",
+  "const ulk_allocator_v1* allocator",
+  "ulk_size maximum_total_bytes",
+]

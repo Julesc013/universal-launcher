@@ -72,8 +72,12 @@ An `ulk_context` is a serialized session boundary. Registration,
 unregistration, execution, inspection, and destruction must not overlap on the
 same context. Independent contexts may be used concurrently. A caller that
 shares one context across threads must provide external serialization. Response
-views and graph JSON are borrowed exactly as documented and must be copied
-before the next operation on that context when they need a longer lifetime.
+views and graph JSON are borrowed exactly as documented. Built-in response and
+graph views last until the next operation on that context; registered-handler
+views retain the handler producer's declared lifetime. Consumers must copy a
+view while its producer still guarantees validity when they need it longer.
+The additive [Owned Responses](owned_responses.md) ABI validates and copies a
+command response without changing those context serialization rules.
 
 The v1 descriptor layout is unchanged. The additive v2 descriptor and register
 entrypoint provide the metadata required for this projection; this remains an

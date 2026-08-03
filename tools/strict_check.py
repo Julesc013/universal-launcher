@@ -12,10 +12,12 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from tools import (
+    abi_contract_check,
     command_contract_check,
     language_runtime_policy_check,
     license_policy_check,
     operation_outcome_contract_check,
+    owned_response_contract_check,
     reference_model_contract_check,
     setup_handoff_contract_check,
     structure_policy_check,
@@ -25,10 +27,12 @@ from tools import (
 def main() -> int:
     checks: list[tuple[str, Callable[[], int]]] = [
         ("structure", structure_policy_check.main),
+        ("abi-contract", abi_contract_check.main),
         ("language-runtime-policy", language_runtime_policy_check.main),
         ("license-policy", license_policy_check.main),
         ("command-contract", command_contract_check.main),
         ("operation-outcome-contract", operation_outcome_contract_check.main),
+        ("owned-response-contract", owned_response_contract_check.main),
         ("setup-handoff-contract", setup_handoff_contract_check.main),
         ("reference-model-contract", reference_model_contract_check.main),
     ]

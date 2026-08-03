@@ -56,6 +56,16 @@ a broad abstract platform.
 - Keep direct, process, and future daemon transports semantically identical.
 - Grant no Setup, network, credential, or product-execution authority.
 
+## ULK-OWNED-RESPONSE-ABI-01
+
+- Validate command-response structure and borrowed string views explicitly.
+- Copy payload and error views into one allocator-owned, budgeted block.
+- Reject overflow and over-budget responses before allocation or copying.
+- Preserve the 1 MiB convenience boundary while allowing an explicit,
+  platform-representable caller-selected aggregate limit.
+- Make release idempotent and independent of source context lifetime.
+- Preserve the existing borrowed command and client ABIs.
+
 ## SETUP-HANDOFF-01
 
 - Hand install/verify/repair/uninstall/rollback to Universal Setup.

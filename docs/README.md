@@ -7,6 +7,7 @@
 - [Root Grammar](architecture/root_grammar.md)
 - [Language And Runtime Policy](architecture/language_and_runtime_policy.md)
 - [Command Graph](architecture/command_graph.md)
+- [Owned Responses](architecture/owned_responses.md)
 - [Module Graph](architecture/module_graph.md)
 - [Data Flow](architecture/data_flow.md)
 - [Ownership](architecture/ownership.md)
