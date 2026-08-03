@@ -2,8 +2,9 @@
 
 `ulk_client_v1` is the product-neutral frontend client seam. A binding supplies
 one versioned adapter for `direct`, `process`, or `daemon` transport and ULK
-performs common ABI, request, response, kind, and revision admission before
-dispatch.
+performs common ABI, request, kind, and revision admission before dispatch.
+Returned command responses can be admitted with
+`ulk_command_response_validate_v1` before a caller interprets their views.
 
 The adapter callback owns product and platform details. Direct adapters may
 call a statically linked product binding; process adapters may supervise a CLI
@@ -15,6 +16,13 @@ allocate memory. The adapter object itself may go out of scope after
 initialization, but `revision.data`, `user_data`, request views, and any
 transport-owned response views remain borrowed. Their owners must keep them
 valid for every call that can observe them. There is no client disposal call.
+
+Callers that need a response beyond its producer's borrowed lifetime can use
+`ulk_command_response_copy_owned_v1`. It validates the response and copies its
+payload, error message, and error detail into one budgeted allocator-owned
+block. `ulk_owned_command_response_release_v1` is idempotent and does not
+depend on the producer remaining alive. Existing borrowed client and command
+response layouts are unchanged.
 
 Frontend-neutral command clients for CLI, daemon, and C ABI transports.
 
