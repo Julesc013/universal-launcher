@@ -13,6 +13,7 @@ if str(ROOT) not in sys.path:
 
 from tools import (
     abi_contract_check,
+    branch_policy_check,
     command_contract_check,
     language_runtime_policy_check,
     license_policy_check,
@@ -28,6 +29,7 @@ def main() -> int:
     checks: list[tuple[str, Callable[[], int]]] = [
         ("structure", structure_policy_check.main),
         ("abi-contract", abi_contract_check.main),
+        ("branch-policy", branch_policy_check.main),
         ("language-runtime-policy", language_runtime_policy_check.main),
         ("license-policy", license_policy_check.main),
         ("command-contract", command_contract_check.main),

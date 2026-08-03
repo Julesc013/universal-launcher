@@ -65,7 +65,14 @@ ALLOWED_SCHEMA_ROOTS = {
     "setup",
 }
 ALLOWED_CONTENT_ROOTS = {"policy", "templates"}
-ALLOWED_RELEASE_ROOTS = {"license.v1.toml", "packaging", "profiles"}
+ALLOWED_RELEASE_ROOTS = {"index", "license.v1.toml", "packaging", "profiles"}
+ALLOWED_RELEASE_INDEX = {
+    "branch_policy.v1.toml",
+    "consumer_matrix.v1.toml",
+    "contract_maturity.v1.toml",
+    "incubator_intake.v1.toml",
+    "provider_capabilities.v1.toml",
+}
 ALLOWED_PACKAGING_ROOTS = {"bsd", "linux", "macos", "portable", "windows"}
 ALLOWED_APPS = {"cli", "daemon", "gui", "tui"}
 
@@ -81,6 +88,7 @@ def main() -> int:
     problems.extend(check_children("contracts/schema", ALLOWED_SCHEMA_ROOTS))
     problems.extend(check_children("content", ALLOWED_CONTENT_ROOTS))
     problems.extend(check_children("release", ALLOWED_RELEASE_ROOTS))
+    problems.extend(check_children("release/index", ALLOWED_RELEASE_INDEX))
     problems.extend(check_children("release/packaging", ALLOWED_PACKAGING_ROOTS))
     problems.extend(check_children("apps", ALLOWED_APPS))
     problems.extend(check_children("apps/gui", set()))
@@ -169,11 +177,14 @@ def check_required_paths() -> list[str]:
         ROOT / "docs" / "architecture" / "owned_responses.md",
         ROOT / "docs" / "architecture" / "root_grammar.md",
         ROOT / "docs" / "roadmap.md",
+        ROOT / "docs" / "governance" / "branch_model.md",
         ROOT / "tests" / "compat" / "ulk_abi_1_6" / "ulk_client_api_1_6.h",
         ROOT / "tests" / "native" / "ulk_abi_1_6_client_compat_smoke.c",
         ROOT / "tests" / "native" / "ulk_abi_layout_smoke.c",
         ROOT / "tests" / "native" / "ulk_owned_response_export_smoke.c",
         ROOT / "tools" / "abi_contract_check.py",
+        ROOT / "tools" / "branch_policy_check.py",
+        ROOT / "release" / "index" / "branch_policy.v1.toml",
     ]
     return [f"missing required path {path.relative_to(ROOT)}" for path in required if not path.exists()]
 
