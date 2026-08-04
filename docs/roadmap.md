@@ -7,7 +7,7 @@ Every new WorkUnit starts from an exact current `dev`, integrates through
 `task/* -> dev`, passes exact-SHA consumer canaries, and is promoted separately
 to canonical `main`. Consumer adoption remains a later exact-pin pull request.
 
-## ULK-CMAKE-SDK-PACKAGE-01 (active)
+## ULK-CMAKE-SDK-PACKAGE-01 (task complete; review pending)
 
 - Exact base: `dev@719a3ec240831547071d69098e1fe8c76f327fb7`.
 - Package only the accepted ABI 1.8 and fixture-qualified contracts as

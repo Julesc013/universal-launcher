@@ -3,7 +3,7 @@
 
 schema = "universal_launcher.sdk_package_workunit.v1"
 workunit = "ULK-CMAKE-SDK-PACKAGE-01"
-status = "active_implementation"
+status = "task_complete"
 base_ref = "refs/heads/dev"
 base_revision = "719a3ec240831547071d69098e1fe8c76f327fb7"
 task_branch = "task/cmake-sdk-package-01"
