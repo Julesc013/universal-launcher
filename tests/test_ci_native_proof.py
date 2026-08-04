@@ -30,6 +30,7 @@ class NativeCiProofTests(unittest.TestCase):
             self.assertIn(runner, workflow)
         self.assertIn("cmake -S . -B build/win32 -A Win32", workflow)
         self.assertIn("cppcheck --project=build/smoke/compile_commands.json", workflow)
+        self.assertEqual(workflow.count("--output-on-failure --parallel 4"), 2)
         self.assertNotIn("actions/checkout@v4", workflow)
         self.assertNotIn("actions/setup-python@v5", workflow)
 

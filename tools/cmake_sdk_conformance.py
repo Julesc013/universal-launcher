@@ -222,11 +222,26 @@ def combined_install(work: Path, config: str, platform: str | None) -> None:
         execute_consumer(consumer_build, config, prefix)
 
 
+def source_mode(work: Path, config: str, platform: str | None) -> dict[str, str]:
+    cmake_configure(EMBEDDED, work / "embedded", {"ULK_SOURCE_DIR": str(ROOT)}, platform)
+    source_build = work / "consumer-source"
+    configure_consumer(source_build, "SOURCE", "STATIC", config, platform)
+    build(source_build, config)
+    result = execute_consumer(source_build, config)
+    assert result is not None
+    return result
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--work-dir", type=Path, required=True)
     parser.add_argument("--config", default="Release")
     parser.add_argument("--platform")
+    parser.add_argument(
+        "--phase",
+        choices=("full", "source", "static", "shared", "combined"),
+        default="full",
+    )
     args = parser.parse_args()
     work = args.work_dir.resolve()
     if work == ROOT or ROOT in work.parents:
@@ -237,22 +252,35 @@ def main() -> int:
         shutil.rmtree(work)
     work.mkdir(parents=True)
 
-    cmake_configure(EMBEDDED, work / "embedded", {"ULK_SOURCE_DIR": str(ROOT)}, args.platform)
-    source_build = work / "consumer-source"
-    configure_consumer(source_build, "SOURCE", "STATIC", args.config, args.platform)
-    build(source_build, args.config)
-    source = execute_consumer(source_build, args.config)
-
-    installed_static, relocated_static = prove_install_mode(work, "STATIC", args.config, args.platform)
-    installed_shared, relocated_shared = prove_install_mode(work, "SHARED", args.config, args.platform)
-    if not all(result == source for result in (installed_static, relocated_static, installed_shared, relocated_shared)):
+    results: list[dict[str, str]] = []
+    if args.phase in {"full", "source"}:
+        results.append(source_mode(work, args.config, args.platform))
+    if args.phase in {"full", "static"}:
+        installed_static, relocated_static = prove_install_mode(
+            work, "STATIC", args.config, args.platform)
+        results.extend((installed_static, relocated_static))
+        negative_controls(
+            work,
+            work / "unrelated" / "prefix-b-static",
+            args.config,
+            args.platform,
+        )
+    if args.phase in {"full", "shared"}:
+        installed_shared, relocated_shared = prove_install_mode(
+            work, "SHARED", args.config, args.platform)
+        results.extend((installed_shared, relocated_shared))
+    if args.phase in {"full", "combined"}:
+        combined_install(work, args.config, args.platform)
+    if not results and args.phase != "combined":
+        raise ConformanceError(f"phase {args.phase} produced no normalized result")
+    if any(result != EXPECTED for result in results):
         raise ConformanceError("source, installed, and relocated normalized results differ")
-
-    combined_install(work, args.config, args.platform)
-
-    static_prefix = work / "unrelated" / "prefix-b-static"
-    negative_controls(work, static_prefix, args.config, args.platform)
-    print(json.dumps({"modes": 5, "normalized_result": source, "relocatable": True, "combined_install": True}, sort_keys=True))
+    print(json.dumps({
+        "phase": args.phase,
+        "normalized_result": EXPECTED,
+        "relocatable": args.phase in {"full", "static", "shared"},
+        "combined_install": args.phase in {"full", "combined"},
+    }, sort_keys=True))
     return 0
 
 

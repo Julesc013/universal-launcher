@@ -159,15 +159,21 @@ if(ULK_BUILD_TESTS)
   ulk_add_native_test(ulk_reference_model_smoke tests/native/ulk_reference_model_smoke.c ulk_static)
   ulk_add_native_test(ulk_product_composition_smoke tests/native/ulk_product_composition_smoke.c ulk_static)
 
-  set(ULK_SDK_CONFORMANCE_COMMAND
-    "${Python3_EXECUTABLE}"
-    "${CMAKE_CURRENT_SOURCE_DIR}/tools/cmake_sdk_conformance.py"
-    --work-dir "${CMAKE_CURRENT_BINARY_DIR}/sdk-conformance"
-    --config "$<CONFIG>"
-  )
-  if(CMAKE_GENERATOR_PLATFORM)
-    list(APPEND ULK_SDK_CONFORMANCE_COMMAND --platform "${CMAKE_GENERATOR_PLATFORM}")
-  endif()
-  add_test(NAME ulk_cmake_sdk_conformance COMMAND ${ULK_SDK_CONFORMANCE_COMMAND})
-  set_tests_properties(ulk_cmake_sdk_conformance PROPERTIES TIMEOUT 900)
+  foreach(ULK_SDK_PHASE IN ITEMS source static shared combined)
+    set(ULK_SDK_CONFORMANCE_COMMAND
+      "${Python3_EXECUTABLE}"
+      "${CMAKE_CURRENT_SOURCE_DIR}/tools/cmake_sdk_conformance.py"
+      --work-dir "${CMAKE_CURRENT_BINARY_DIR}/sdk-conformance/${ULK_SDK_PHASE}"
+      --config "$<CONFIG>"
+      --phase "${ULK_SDK_PHASE}"
+    )
+    if(CMAKE_GENERATOR_PLATFORM)
+      list(APPEND ULK_SDK_CONFORMANCE_COMMAND --platform "${CMAKE_GENERATOR_PLATFORM}")
+    endif()
+    add_test(
+      NAME "ulk_cmake_sdk_${ULK_SDK_PHASE}"
+      COMMAND ${ULK_SDK_CONFORMANCE_COMMAND}
+    )
+    set_tests_properties("ulk_cmake_sdk_${ULK_SDK_PHASE}" PROPERTIES TIMEOUT 900)
+  endforeach()
 endif()
