@@ -159,7 +159,7 @@ if(ULK_BUILD_TESTS)
   ulk_add_native_test(ulk_reference_model_smoke tests/native/ulk_reference_model_smoke.c ulk_static)
   ulk_add_native_test(ulk_product_composition_smoke tests/native/ulk_product_composition_smoke.c ulk_static)
 
-  foreach(ULK_SDK_PHASE IN ITEMS source static shared combined)
+  foreach(ULK_SDK_PHASE IN ITEMS workspace static shared combined)
     set(ULK_SDK_CONFORMANCE_COMMAND
       "${Python3_EXECUTABLE}"
       "${CMAKE_CURRENT_SOURCE_DIR}/tools/cmake_sdk_conformance.py"

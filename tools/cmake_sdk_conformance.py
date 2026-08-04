@@ -239,7 +239,7 @@ def main() -> int:
     parser.add_argument("--platform")
     parser.add_argument(
         "--phase",
-        choices=("full", "source", "static", "shared", "combined"),
+        choices=("full", "workspace", "static", "shared", "combined"),
         default="full",
     )
     args = parser.parse_args()
@@ -253,7 +253,7 @@ def main() -> int:
     work.mkdir(parents=True)
 
     results: list[dict[str, str]] = []
-    if args.phase in {"full", "source"}:
+    if args.phase in {"full", "workspace"}:
         results.append(source_mode(work, args.config, args.platform))
     if args.phase in {"full", "static"}:
         installed_static, relocated_static = prove_install_mode(
