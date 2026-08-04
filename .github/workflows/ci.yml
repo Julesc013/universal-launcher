@@ -25,7 +25,27 @@ jobs:
           python-version: "3.11"
       - run: python -m unittest discover -s tests -v
       - run: python tools/structure_policy_check.py
-      - run: cmake -S . -B build/smoke -DCMAKE_BUILD_TYPE=Release
+      - run: cmake -S . -B build/smoke -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
       - run: cmake --build build/smoke --config Release
       - run: ctest --test-dir build/smoke -C Release --output-on-failure
+      - run: python tools/strict_check.py
+      - name: Static analysis
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes cppcheck
+          cppcheck --project=build/smoke/compile_commands.json --enable=warning,performance,portability --error-exitcode=1 --suppress=missingIncludeSystem
+
+  windows-win32:
+    name: test (windows-latest, Win32)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      - run: python -m unittest discover -s tests -v
+      - run: cmake -S . -B build/win32 -A Win32 -DCMAKE_BUILD_TYPE=Release
+      - run: cmake --build build/win32 --config Release
+      - run: ctest --test-dir build/win32 -C Release --output-on-failure
       - run: python tools/strict_check.py

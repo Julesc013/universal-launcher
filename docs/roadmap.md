@@ -7,6 +7,18 @@ Every new WorkUnit starts from an exact current `dev`, integrates through
 `task/* -> dev`, passes exact-SHA consumer canaries, and is promoted separately
 to canonical `main`. Consumer adoption remains a later exact-pin pull request.
 
+## ULK-CMAKE-SDK-PACKAGE-01 (active)
+
+- Exact base: `dev@719a3ec240831547071d69098e1fe8c76f327fb7`.
+- Package only the accepted ABI 1.8 and fixture-qualified contracts as
+  `UniversalLauncher::Headers`, `UniversalLauncher::CoreStatic`, and
+  `UniversalLauncher::CoreShared`.
+- Prove source, installed static, installed shared, and relocated installed
+  modes with one neutral external consumer and identical normalized results.
+- Keep FacMan's stable ULK pin unchanged and open no process, persistence,
+  session, setup, consumer-adoption, signing, publication, or product authority.
+- Leave `USK-CMAKE-SDK-PACKAGE-01` inactive until this package is reviewed.
+
 ## ULAUNCH-CANON-01
 
 - Keep the sibling root grammar enforced.
