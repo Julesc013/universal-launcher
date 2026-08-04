@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://julesc013.github.io/universal-launcher/contracts/schema/composition/entrypoint_descriptor.v1.schema.json",
+  "title": "Universal Launcher Entrypoint Descriptor",
+  "type": "object",
+  "required": ["schema", "entrypoint_id", "relative_path", "capabilities"],
+  "properties": {
+    "schema": { "const": "ulk.entrypoint.v1" },
+    "entrypoint_id": { "$ref": "#/$defs/identifier" },
+    "relative_path": { "$ref": "#/$defs/relative_path" },
+    "artifact_set_id": { "$ref": "#/$defs/identifier" },
+    "capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "launch_capability.v1.schema.json" }
+    }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._-]+$"
+    },
+    "relative_path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$"
+    }
+  },
+  "additionalProperties": false
+}

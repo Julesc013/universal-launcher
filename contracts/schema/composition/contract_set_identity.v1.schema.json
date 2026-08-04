@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://julesc013.github.io/universal-launcher/contracts/schema/composition/contract_set_identity.v1.schema.json",
+  "title": "Universal Launcher Contract-Set Identity",
+  "type": "object",
+  "required": ["schema", "contract_set_id", "version", "sha256"],
+  "properties": {
+    "schema": { "const": "ulk.contract_set_identity.v1" },
+    "contract_set_id": { "$ref": "#/$defs/identifier" },
+    "version": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._-]+$"
+    }
+  },
+  "additionalProperties": false
+}

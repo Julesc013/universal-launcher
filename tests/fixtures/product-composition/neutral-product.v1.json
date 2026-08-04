@@ -1,0 +1,31 @@
+{
+  "schema": "ulk.product_composition.v1",
+  "product": {
+    "schema": "ulk.product_descriptor.v2",
+    "product_id": "org.example.fixture",
+    "exact_version": "1.0.0",
+    "publisher_id": "publisher.example",
+    "composition_revision": "composition.1"
+  },
+  "entrypoints": [
+    {
+      "schema": "ulk.entrypoint.v1",
+      "entrypoint_id": "main",
+      "relative_path": "bin/fixture",
+      "artifact_set_id": "core",
+      "capabilities": [
+        {
+          "schema": "ulk.launch_capability.v1",
+          "kind": "single_process",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "contract_set": {
+    "schema": "ulk.contract_set_identity.v1",
+    "contract_set_id": "org.example.fixture.contracts",
+    "version": "1",
+    "sha256": "5555555555555555555555555555555555555555555555555555555555555555"
+  }
+}

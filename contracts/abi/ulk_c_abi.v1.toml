@@ -3,7 +3,7 @@
 
 schema = "ulk.c_abi_snapshot.v1"
 abi_major = 1
-abi_minor = 7
+abi_minor = 8
 compatibility_base_sha = "7f4312faf2f1ac2856a51393fef0ec49fc276a78"
 
 exports = [
@@ -18,6 +18,7 @@ exports = [
   "ulk_command_response_copy_owned_with_options_v1",
   "ulk_command_response_validate_v1",
   "ulk_command_unregister_v1",
+  "ulk_contract_set_identity_validate_v1",
   "ulk_context_create_v1",
   "ulk_context_destroy_v1",
   "ulk_dependent_instance_status_code_v1",
@@ -28,7 +29,11 @@ exports = [
   "ulk_operation_identity_validate_v1",
   "ulk_operation_outcome_name_v1",
   "ulk_operation_result_validate_v1",
+  "ulk_entrypoint_descriptor_validate_v1",
+  "ulk_launch_capability_validate_v1",
   "ulk_owned_command_response_release_v1",
+  "ulk_product_composition_validate_v1",
+  "ulk_product_descriptor_validate_v2",
   "ulk_product_ref_validate_v1",
   "ulk_profile_ref_validate_v2",
   "ulk_reference_graph_validate_v1",
@@ -125,4 +130,47 @@ fields = [
   "ulk_size struct_size",
   "const ulk_allocator_v1* allocator",
   "ulk_size maximum_total_bytes",
+]
+
+[layouts.ulk_contract_set_identity_v1]
+fields = [
+  "ulk_size struct_size",
+  "ulk_string_view contract_set_id",
+  "ulk_string_view version",
+  "ulk_string_view sha256",
+]
+
+[layouts.ulk_launch_capability_v1]
+fields = [
+  "ulk_size struct_size",
+  "ulk_launch_capability_kind_v1 kind",
+  "ulk_bool required",
+]
+
+[layouts.ulk_entrypoint_descriptor_v1]
+fields = [
+  "ulk_size struct_size",
+  "ulk_string_view entrypoint_id",
+  "ulk_string_view relative_path",
+  "ulk_string_view artifact_set_id",
+  "const ulk_launch_capability_v1* capabilities",
+  "ulk_size capability_count",
+]
+
+[layouts.ulk_product_descriptor_v2]
+fields = [
+  "ulk_size struct_size",
+  "ulk_string_view product_id",
+  "ulk_string_view exact_version",
+  "ulk_string_view publisher_id",
+  "ulk_string_view composition_revision",
+]
+
+[layouts.ulk_product_composition_v1]
+fields = [
+  "ulk_size struct_size",
+  "const ulk_product_descriptor_v2* product",
+  "const ulk_entrypoint_descriptor_v1* entrypoints",
+  "ulk_size entrypoint_count",
+  "const ulk_contract_set_identity_v1* contract_set",
 ]

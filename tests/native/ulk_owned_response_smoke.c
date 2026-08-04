@@ -926,7 +926,7 @@ static int test_context_response_sources(void)
 int main(void)
 {
     int status;
-    CHECK(ULK_API_VERSION_MAJOR == 1 && ULK_API_VERSION_MINOR == 7, 85);
+    CHECK(ULK_API_VERSION_MAJOR == 1 && ULK_API_VERSION_MINOR >= 7, 85);
     status = test_validation();
     if (status != 0) return status;
     status = test_default_copy_and_release();
