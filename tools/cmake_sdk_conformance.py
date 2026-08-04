@@ -287,7 +287,10 @@ def main() -> int:
         default="full",
     )
     args = parser.parse_args()
-    work = args.work_dir.resolve()
+    # Keep the spelling passed by CTest.  Path.resolve() can produce a \\?\-prefixed
+    # path on newer Windows runners; Visual Studio's VCTargetsPath probe invokes
+    # cmd.exe and treats that extended local path as a network working directory.
+    work = Path(os.path.abspath(args.work_dir))
     if work == ROOT or ROOT in work.parents:
         allowed_build_root = ROOT / "build"
         if work != allowed_build_root and allowed_build_root not in work.parents:
