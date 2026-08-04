@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import ctypes
 import json
 import os
 import shutil
@@ -26,9 +27,33 @@ class ConformanceError(RuntimeError):
     pass
 
 
-def run(command: list[str], *, env: dict[str, str] | None = None, expect_failure: bool = False) -> subprocess.CompletedProcess[str]:
+def run(
+    command: list[str],
+    *,
+    env: dict[str, str] | None = None,
+    expect_failure: bool = False,
+    timeout_seconds: int | None = None,
+) -> subprocess.CompletedProcess[str]:
     print("+", " ".join(command), flush=True)
-    result = subprocess.run(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env)
+    try:
+        result = subprocess.run(
+            command,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            env=env,
+            timeout=timeout_seconds,
+        )
+    except subprocess.TimeoutExpired as error:
+        if expect_failure:
+            return subprocess.CompletedProcess(
+                command,
+                124,
+                stdout=f"negative control timed out after {timeout_seconds} seconds",
+            )
+        raise ConformanceError(
+            f"command timed out after {timeout_seconds} seconds: {' '.join(command)}"
+        ) from error
     if expect_failure:
         if result.returncode == 0:
             raise ConformanceError(f"negative control unexpectedly succeeded: {' '.join(command)}")
@@ -71,10 +96,21 @@ def runtime_environment(prefix: Path) -> dict[str, str]:
     return env
 
 
-def execute_consumer(build_dir: Path, config: str, prefix: Path | None = None, expect_failure: bool = False) -> dict[str, str] | None:
+def execute_consumer(
+    build_dir: Path,
+    config: str,
+    prefix: Path | None = None,
+    expect_failure: bool = False,
+    timeout_seconds: int | None = None,
+) -> dict[str, str] | None:
     program = executable(build_dir, "ulk_sdk_external_consumer", config)
     env = runtime_environment(prefix) if prefix else None
-    result = run([str(program), str(FIXTURE)], env=env, expect_failure=expect_failure)
+    result = run(
+        [str(program), str(FIXTURE)],
+        env=env,
+        expect_failure=expect_failure,
+        timeout_seconds=timeout_seconds,
+    )
     if expect_failure:
         return None
     line = result.stdout.strip().splitlines()[-1]
@@ -170,7 +206,13 @@ def prove_install_mode(work: Path, linkage: str, config: str, platform: str | No
         unavailable = runtime.with_name(runtime.name + ".unavailable")
         runtime.rename(unavailable)
         try:
-            execute_consumer(relocated_build, config, prefix_b, expect_failure=True)
+            execute_consumer(
+                relocated_build,
+                config,
+                prefix_b,
+                expect_failure=True,
+                timeout_seconds=30,
+            )
         finally:
             unavailable.rename(runtime)
     assert installed is not None and relocated is not None
@@ -233,6 +275,8 @@ def source_mode(work: Path, config: str, platform: str | None) -> dict[str, str]
 
 
 def main() -> int:
+    if os.name == "nt":
+        ctypes.windll.kernel32.SetErrorMode(0x0001 | 0x0002 | 0x8000)
     parser = argparse.ArgumentParser()
     parser.add_argument("--work-dir", type=Path, required=True)
     parser.add_argument("--config", default="Release")
