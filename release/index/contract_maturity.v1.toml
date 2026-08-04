@@ -1,0 +1,31 @@
+# SPDX-FileCopyrightText: 2026 Jules C
+# SPDX-License-Identifier: MIT
+
+schema = "universal.contract_maturity.v1"
+provider = "universal-launcher"
+reviewed_on = "2026-08-04"
+
+[[contract]]
+id = "product_descriptor.v2"
+maturity = "fixture-qualified"
+evidence = ["tests/fixtures/product-composition/neutral-product.v1.json", "tests/native/ulk_product_composition_smoke.c"]
+
+[[contract]]
+id = "entrypoint_descriptor.v1"
+maturity = "fixture-qualified"
+evidence = ["tests/fixtures/product-composition/neutral-product.v1.json", "tests/native/ulk_product_composition_smoke.c"]
+
+[[contract]]
+id = "launch_capability.v1"
+maturity = "fixture-qualified"
+evidence = ["tests/fixtures/product-composition/neutral-product.v1.json", "tests/native/ulk_product_composition_smoke.c"]
+
+[[contract]]
+id = "product_composition.v1"
+maturity = "fixture-qualified"
+evidence = ["tests/fixtures/product-composition/neutral-product.v1.json", "tests/native/ulk_product_composition_smoke.c"]
+
+[[contract]]
+id = "contract_set_identity.v1"
+maturity = "fixture-qualified"
+evidence = ["tests/fixtures/product-composition/neutral-product.v1.json", "tests/native/ulk_product_composition_smoke.c"]

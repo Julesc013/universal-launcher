@@ -92,7 +92,7 @@ def check() -> list[str]:
         int(minor.group(1)) if minor else None,
     )
     snapshot_version = (manifest.get("abi_major"), manifest.get("abi_minor"))
-    if current_version != (1, 7) or snapshot_version != current_version:
+    if current_version != (1, 8) or snapshot_version != current_version:
         problems.append(
             f"ABI version snapshot {snapshot_version!r} does not match current {current_version!r}"
         )
@@ -139,6 +139,7 @@ def check() -> list[str]:
         "ulk_abi_layout_smoke",
         "ulk_abi_1_6_client_compat_smoke",
         "ulk_owned_response_export_smoke",
+        "ulk_product_composition_smoke",
         "target_link_libraries(ulk_abi_1_6_client_compat_smoke PRIVATE ulk_shared)",
         "target_link_libraries(ulk_owned_response_export_smoke PRIVATE ulk_shared)",
     ):
