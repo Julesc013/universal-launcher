@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://julesc013.github.io/universal-launcher/contracts/schema/composition/launch_capability.v1.schema.json",
+  "title": "Universal Launcher Launch Capability",
+  "type": "object",
+  "required": ["schema", "kind", "required"],
+  "properties": {
+    "schema": { "const": "ulk.launch_capability.v1" },
+    "kind": {
+      "enum": [
+        "single_process",
+        "open_document",
+        "multi_instance",
+        "profile_selection",
+        "artifact_sets",
+        "session_supervision",
+        "background_service",
+        "server"
+      ]
+    },
+    "required": { "type": "boolean" }
+  },
+  "additionalProperties": false
+}

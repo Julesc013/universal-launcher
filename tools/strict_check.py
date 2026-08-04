@@ -19,6 +19,7 @@ from tools import (
     license_policy_check,
     operation_outcome_contract_check,
     owned_response_contract_check,
+    product_composition_contract_check,
     reference_model_contract_check,
     setup_handoff_contract_check,
     structure_policy_check,
@@ -35,6 +36,7 @@ def main() -> int:
         ("command-contract", command_contract_check.main),
         ("operation-outcome-contract", operation_outcome_contract_check.main),
         ("owned-response-contract", owned_response_contract_check.main),
+        ("product-composition-contract", product_composition_contract_check.main),
         ("setup-handoff-contract", setup_handoff_contract_check.main),
         ("reference-model-contract", reference_model_contract_check.main),
     ]

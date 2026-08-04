@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://julesc013.github.io/universal-launcher/contracts/schema/composition/product_descriptor.v2.schema.json",
+  "title": "Universal Launcher Product Descriptor",
+  "type": "object",
+  "required": ["schema", "product_id", "exact_version", "publisher_id", "composition_revision"],
+  "properties": {
+    "schema": { "const": "ulk.product_descriptor.v2" },
+    "product_id": { "$ref": "#/$defs/identifier" },
+    "exact_version": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "publisher_id": { "$ref": "#/$defs/identifier" },
+    "composition_revision": { "type": "string", "minLength": 1, "maxLength": 128 }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._-]+$"
+    }
+  },
+  "additionalProperties": false
+}

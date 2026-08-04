@@ -115,7 +115,10 @@ The current repository is an incremental production kernel. The authoritative
 command graph, Setup handoff, frontend-neutral client/transport ABI,
 product-neutral operation-outcome ABI, allocator-owned command-response ABI,
 caller-selected owned-response budgets, and product-neutral reference
-validation/composition ABI are implemented.
+validation/composition ABI are implemented. Product descriptors, entrypoint
+descriptors, launch capabilities, composition records, and contract-set
+identity are defined by the additive ABI 1.8 contracts documented in
+[`docs/architecture/product_composition.md`](docs/architecture/product_composition.md).
 Reference persistence, daemon runtime, and platform process services remain
 incomplete.
 

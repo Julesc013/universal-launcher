@@ -140,8 +140,8 @@ def check() -> list[str]:
     minor = re.search(r"#define ULK_API_VERSION_MINOR (\d+)", types_text)
     if major is None or int(major.group(1)) != 1:
         problems.append("owned-response ABI must preserve ULK ABI major 1")
-    if minor is None or int(minor.group(1)) != 7:
-        problems.append("owned-response ABI must remain at pre-acceptance ULK ABI 1.7")
+    if minor is None or int(minor.group(1)) < 7:
+        problems.append("owned-response ABI must remain available from ULK ABI 1.7 onward")
 
     combined = f"{header_text}\n{source_text}".lower()
     for forbidden in ("factorio", "modset", "save file", "setup mutation"):
