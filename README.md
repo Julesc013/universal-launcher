@@ -111,6 +111,24 @@ cmake -S . -B build/native-smoke
 cmake --build build/native-smoke
 ```
 
+## CMake SDK
+
+Release 1.8.0 can be installed and consumed without a sibling source checkout:
+
+```powershell
+cmake -S . -B build/sdk -DULK_BUILD_TESTS=OFF -DULK_BUILD_APPS=OFF
+cmake --build build/sdk --config Release
+cmake --install build/sdk --config Release --prefix out/ulk-sdk
+```
+
+An external consumer then uses
+`find_package(UniversalLauncher 1.8.0 EXACT CONFIG REQUIRED)` and links one of
+`UniversalLauncher::CoreStatic`,
+`UniversalLauncher::CoreShared`, or the header-only
+`UniversalLauncher::Headers` surface. See [the installed SDK guide](cmake/README-SDK.md).
+The package version remains separate from C ABI 1.8 and fixture-qualified
+contract maturity.
+
 The current repository is an incremental production kernel. The authoritative
 command graph, Setup handoff, frontend-neutral client/transport ABI,
 product-neutral operation-outcome ABI, allocator-owned command-response ABI,
