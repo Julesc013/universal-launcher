@@ -1,0 +1,42 @@
+# SPDX-FileCopyrightText: 2026 Jules C
+# SPDX-License-Identifier: MIT
+
+schema = "universal_launcher.sdk_package_workunit.v1"
+workunit = "ULK-CMAKE-SDK-PACKAGE-01"
+status = "task_complete"
+base_ref = "refs/heads/dev"
+base_revision = "719a3ec240831547071d69098e1fe8c76f327fb7"
+task_branch = "task/cmake-sdk-package-01"
+package_version = "1.8.0"
+c_abi_major = 1
+c_abi_minor = 8
+contract_maturity = "fixture-qualified"
+
+exported_targets = [
+  "UniversalLauncher::Headers",
+  "UniversalLauncher::CoreStatic",
+  "UniversalLauncher::CoreShared",
+]
+
+required_modes = [
+  "source_workspace",
+  "installed_static",
+  "installed_shared",
+  "relocated_installed_static",
+  "relocated_installed_shared",
+]
+
+[scope]
+new_launcher_behavior = false
+consumer_repin = false
+consumer_adoption = false
+setup_mutation = false
+product_execution = false
+signing = false
+publication = false
+contract_maturity_advanced = false
+usk_sdk_packaging_activated = false
+
+[consumer_observation]
+facman_stable_ulk_pin = "7fc25340623131ba86c08dca4fb8a43b18a4520d"
+pin_changed = false

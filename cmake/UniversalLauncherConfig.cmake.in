@@ -1,0 +1,17 @@
+# SPDX-FileCopyrightText: 2026 Jules C
+# SPDX-License-Identifier: MIT
+
+@PACKAGE_INIT@
+
+set(UniversalLauncher_VERSION "@PROJECT_VERSION@")
+set_and_check(
+  UniversalLauncher_CONTRACTS_DIR
+  "@PACKAGE_ULK_INSTALL_CONTRACTS_DIR@"
+)
+set_and_check(
+  UniversalLauncher_ABI_MANIFEST
+  "@PACKAGE_ULK_INSTALL_ABI_MANIFEST@"
+)
+
+include("${CMAKE_CURRENT_LIST_DIR}/UniversalLauncherTargets.cmake")
+check_required_components(UniversalLauncher)

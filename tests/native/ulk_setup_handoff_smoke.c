@@ -321,12 +321,18 @@ static int test_authority_status(void)
     CHECK(!status.launcher_can_mutate_setup, 62);
     CHECK(status.mutation_owner.size == strlen("universal-setup"), 63);
     CHECK(
-        memcmp(status.mutation_owner.data, "universal-setup", status.mutation_owner.size) == 0,
+        memcmp(
+            status.mutation_owner.data,
+            "universal-setup",
+            (size_t)status.mutation_owner.size) == 0,
         64);
     CHECK(ulk_dependent_instance_status_code_v1(
         ULK_DEPENDENT_INSTANCE_RECOVERY_REQUIRED, &status_code) == ULK_STATUS_OK, 66);
     CHECK(status_code.size == strlen("managed_install_recovery_required"), 67);
-    CHECK(memcmp(status_code.data, "managed_install_recovery_required", status_code.size) == 0, 68);
+    CHECK(memcmp(
+        status_code.data,
+        "managed_install_recovery_required",
+        (size_t)status_code.size) == 0, 68);
     CHECK(ulk_dependent_instance_status_code_v1((ulk_dependent_instance_status_v1)0,
         &status_code) == ULK_STATUS_INVALID_ARGUMENT, 69);
     return 0;
