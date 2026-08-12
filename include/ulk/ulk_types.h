@@ -7,7 +7,7 @@
 #include <stdint.h>
 
 #define ULK_API_VERSION_MAJOR 1
-#define ULK_API_VERSION_MINOR 8
+#define ULK_API_VERSION_MINOR 9
 
 typedef uint64_t ulk_size;
 typedef int ulk_bool;

@@ -3,7 +3,7 @@
 
 schema = "ulk.c_abi_snapshot.v1"
 abi_major = 1
-abi_minor = 8
+abi_minor = 9
 compatibility_base_sha = "7f4312faf2f1ac2856a51393fef0ec49fc276a78"
 
 exports = [
@@ -40,6 +40,12 @@ exports = [
   "ulk_setup_apply_request_validate_v1",
   "ulk_setup_authority_status_get_v1",
   "ulk_setup_result_project_v1",
+  "ulk_session_journal_inspect_v1",
+  "ulk_session_journal_last_run_v1",
+  "ulk_session_journal_list_v1",
+  "ulk_session_journal_validate_v1",
+  "ulk_session_journal_write_v1",
+  "ulk_session_record_validate_v1",
   "ulk_transport_kind_name_v1",
 ]
 
@@ -60,6 +66,30 @@ fields = [
   "int code",
   "ulk_string_view message",
   "ulk_string_view detail",
+]
+
+[layouts.ulk_session_journal_v1]
+fields = [
+  "ulk_size struct_size",
+  "ulk_string_view root",
+  "ulk_size maximum_records",
+]
+
+[layouts.ulk_session_record_v1]
+fields = [
+  "ulk_size struct_size",
+  "ulk_string_view session_id",
+  "ulk_operation_identity_v1 identity",
+  "ulk_string_view runnable_reference",
+  "ulk_string_view process_identity",
+  "ulk_session_state_v1 state",
+  "ulk_string_view started_at",
+  "ulk_string_view ended_at",
+  "ulk_bool exit_code_known",
+  "int64_t exit_code",
+  "const ulk_operation_result_v1* terminal_result",
+  "ulk_string_view recovery_reference",
+  "ulk_string_view relaunch_reference",
 ]
 
 [layouts.ulk_command_request_v1]

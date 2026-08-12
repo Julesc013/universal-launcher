@@ -7,6 +7,18 @@ Every new WorkUnit starts from an exact current `dev`, integrates through
 `task/* -> dev`, passes exact-SHA consumer canaries, and is promoted separately
 to canonical `main`. Consumer adoption remains a later exact-pin pull request.
 
+## ULK-SESSION-LAST-RUN-SUBSET-01 (active implementation)
+
+- Exact base: `dev@7d4fd8e25a8d529279c4ad18d983e9cd51839eb7`.
+- Add product-neutral session/operation/attempt identity, running and terminal
+  records, bounded caller-rooted persistence, inspect/list, and authoritative
+  Last Run lookup.
+- Preserve `outcome_unknown` and `recovery_required`, fail closed on corrupt or
+  future records, and prove idempotent/interruption-safe writes through the
+  native ABI and installed SDK consumer.
+- Add no process execution, daemon, dynamic provider, Setup mutation, product
+  terminology, consumer repin, signing, or publication authority.
+
 ## ULK-CMAKE-SDK-PACKAGE-01 (task complete; review pending)
 
 - Exact base: `dev@719a3ec240831547071d69098e1fe8c76f327fb7`.
