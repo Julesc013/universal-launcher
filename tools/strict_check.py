@@ -22,6 +22,7 @@ from tools import (
     product_composition_contract_check,
     reference_model_contract_check,
     sdk_package_check,
+    session_promotion_check,
     session_contract_check,
     setup_handoff_contract_check,
     structure_policy_check,
@@ -43,6 +44,7 @@ def main() -> int:
         ("setup-handoff-contract", setup_handoff_contract_check.main),
         ("reference-model-contract", reference_model_contract_check.main),
         ("sdk-package", sdk_package_check.main),
+        ("session-promotion", session_promotion_check.main),
     ]
     failed: list[str] = []
     for name, check in checks:
