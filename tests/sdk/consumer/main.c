@@ -7,6 +7,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if defined(_WIN32)
+#include <direct.h>
+#include <process.h>
+#define ULK_SDK_PID _getpid
+#else
+#include <unistd.h>
+#define ULK_SDK_PID getpid
+#endif
+
 static ulk_string_view view(const char* value)
 {
     ulk_string_view result;
@@ -47,6 +56,57 @@ static int fixture_contains(const char* path, const char* expected)
     free(content);
     fclose(stream);
     return found;
+}
+
+static int prove_session_journal(void)
+{
+    char root[128];
+    char path[256];
+    char json[2048];
+    ulk_size required = 0u;
+    ulk_session_lookup_status_v1 lookup = ULK_SESSION_LOOKUP_NOT_FOUND;
+    ulk_session_journal_v1 journal;
+    ulk_session_record_v1 record;
+    ulk_error_v1 error;
+    int result = 0;
+
+    (void)snprintf(root, sizeof(root), "ulk-sdk-session-%d", ULK_SDK_PID());
+    memset(&journal, 0, sizeof(journal));
+    memset(&record, 0, sizeof(record));
+    memset(&error, 0, sizeof(error));
+    journal.struct_size = sizeof(journal);
+    journal.root = view(root);
+    journal.maximum_records = 4u;
+    record.struct_size = sizeof(record);
+    record.session_id = view("sdk-session-1");
+    record.identity.struct_size = sizeof(record.identity);
+    record.identity.operation_id = view("sdk-operation-1");
+    record.identity.attempt_id = view("sdk-attempt-1");
+    record.runnable_reference = view("fixture://sdk/runnable");
+    record.process_identity = view("sdk-fixture-process");
+    record.state = ULK_SESSION_RUNNING;
+    record.started_at = view("2026-08-12T00:00:00Z");
+    error.struct_size = sizeof(error);
+    if (ulk_session_journal_write_v1(&journal, &record, &error) == ULK_STATUS_OK &&
+        ulk_session_journal_inspect_v1(&journal, record.session_id, &lookup,
+            json, sizeof(json), &required, &error) == ULK_STATUS_OK &&
+        lookup == ULK_SESSION_LOOKUP_FOUND &&
+        strstr(json, "\"schema\":\"ulk.session_record.v1\"") != NULL) {
+        result = 1;
+    }
+    (void)snprintf(path, sizeof(path), "%s/sessions/sdk-session-1.session", root);
+    (void)remove(path);
+    (void)snprintf(path, sizeof(path), "%s/.ulk-session.lock", root);
+    (void)remove(path);
+    (void)snprintf(path, sizeof(path), "%s/sessions", root);
+#if defined(_WIN32)
+    (void)_rmdir(path);
+    (void)_rmdir(root);
+#else
+    (void)rmdir(path);
+    (void)rmdir(root);
+#endif
+    return result;
 }
 
 int main(int argc, char** argv)
@@ -119,7 +179,11 @@ int main(int argc, char** argv)
         return 14;
     }
 
-    printf("{\"abi\":\"%u.%u\",\"composition\":\"valid\",\"owned_response\":\"valid\"}\n",
+    if (!prove_session_journal()) {
+        return 15;
+    }
+
+    printf("{\"abi\":\"%u.%u\",\"composition\":\"valid\",\"owned_response\":\"valid\",\"session_journal\":\"valid\"}\n",
            (unsigned int)(ulk_abi_version_v1() >> 16),
            (unsigned int)(ulk_abi_version_v1() & 0xffffu));
     return 0;

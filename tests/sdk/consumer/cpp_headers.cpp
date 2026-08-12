@@ -6,5 +6,5 @@
 
 int main()
 {
-    return ULK_API_VERSION_MAJOR == 1 && ULK_API_VERSION_MINOR == 8 ? 0 : 1;
+    return ULK_API_VERSION_MAJOR == 1 && ULK_API_VERSION_MINOR == 9 ? 0 : 1;
 }

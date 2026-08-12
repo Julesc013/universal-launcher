@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 cmake_minimum_required(VERSION 3.21)
-project(universal_launcher VERSION 1.8.0 LANGUAGES C)
+project(universal_launcher VERSION 1.9.0 LANGUAGES C)
 
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
@@ -44,6 +44,7 @@ set(ULK_KERNEL_SOURCES
   runtime/launcher/kernel/ulk_api.c
   runtime/launcher/kernel/ulk_product_composition.c
   runtime/launcher/kernel/ulk_reference_model.c
+  runtime/launcher/kernel/ulk_session.c
   runtime/launcher/kernel/ulk_setup_handoff.c
 )
 
@@ -138,6 +139,7 @@ if(ULK_BUILD_TESTS)
   ulk_add_native_test(ulk_setup_handoff_smoke tests/native/ulk_setup_handoff_smoke.c ulk_static)
   ulk_add_native_test(ulk_client_smoke tests/native/ulk_client_smoke.c ulk_static)
   ulk_add_native_test(ulk_operation_outcome_smoke tests/native/ulk_operation_outcome_smoke.c ulk_static)
+  ulk_add_native_test(ulk_session_journal_smoke tests/native/ulk_session_journal_smoke.c ulk_static)
   add_executable(ulk_owned_response_smoke tests/native/ulk_owned_response_smoke.c)
   target_link_libraries(ulk_owned_response_smoke PRIVATE ulk_static)
   ulk_enable_strict_warnings(ulk_owned_response_smoke)

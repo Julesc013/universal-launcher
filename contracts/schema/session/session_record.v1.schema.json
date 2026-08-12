@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://julesc013.github.io/universal-launcher/contracts/session/session_record.v1.schema.json",
+  "title": "Universal Launcher Session Record",
+  "type": "object",
+  "required": [
+    "schema",
+    "session_id",
+    "operation_id",
+    "attempt_id",
+    "runnable_reference",
+    "process_identity",
+    "state",
+    "started_at",
+    "ended_at",
+    "exit_code",
+    "terminal_result",
+    "recovery_reference",
+    "relaunch_reference"
+  ],
+  "properties": {
+    "schema": { "const": "ulk.session_record.v1" },
+    "session_id": { "$ref": "#/$defs/identifier" },
+    "operation_id": { "$ref": "#/$defs/identifier" },
+    "attempt_id": { "$ref": "#/$defs/identifier" },
+    "runnable_reference": { "type": "string", "minLength": 1, "maxLength": 4096 },
+    "process_identity": {
+      "type": ["string", "null"],
+      "maxLength": 1024
+    },
+    "state": { "enum": ["running", "terminal"] },
+    "started_at": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "ended_at": {
+      "type": ["string", "null"],
+      "maxLength": 64
+    },
+    "exit_code": { "type": ["integer", "null"] },
+    "terminal_result": {
+      "anyOf": [
+        { "$ref": "../command/operation_outcome.v1.schema.json" },
+        { "type": "null" }
+      ]
+    },
+    "recovery_reference": {
+      "type": ["string", "null"],
+      "maxLength": 128
+    },
+    "relaunch_reference": {
+      "type": ["string", "null"],
+      "maxLength": 128
+    }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "state": { "const": "running" } },
+        "required": ["state"]
+      },
+      "then": {
+        "properties": {
+          "ended_at": { "type": "null" },
+          "exit_code": { "type": "null" },
+          "terminal_result": { "type": "null" },
+          "recovery_reference": { "type": "null" },
+          "relaunch_reference": { "type": "null" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "state": { "const": "terminal" } },
+        "required": ["state"]
+      },
+      "then": {
+        "properties": {
+          "ended_at": { "type": "string", "minLength": 1, "maxLength": 64 },
+          "terminal_result": { "$ref": "../command/operation_outcome.v1.schema.json" }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}
