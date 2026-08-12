@@ -139,12 +139,6 @@ static int ulk_views_equal(ulk_string_view left, ulk_string_view right)
         (left.size == 0u || memcmp(left.data, right.data, (size_t)left.size) == 0);
 }
 
-static int ulk_view_equals_text(ulk_string_view left, const char* right)
-{
-    const size_t length = strlen(right);
-    return left.size == (ulk_size)length && memcmp(left.data, right, length) == 0;
-}
-
 static int ulk_copy_view(char* destination, size_t capacity, ulk_string_view source)
 {
     if (source.size >= (ulk_size)capacity) return 0;
@@ -192,14 +186,6 @@ static int ulk_builder_append_integer(ulk_text_builder* builder, int64_t value)
 {
     char number[64];
     const int count = snprintf(number, sizeof(number), "%" PRId64, value);
-    return count > 0 && (size_t)count < sizeof(number) &&
-        ulk_builder_append_bytes(builder, number, (size_t)count);
-}
-
-static int ulk_builder_append_unsigned(ulk_text_builder* builder, uint64_t value)
-{
-    char number[64];
-    const int count = snprintf(number, sizeof(number), "%" PRIu64, value);
     return count > 0 && (size_t)count < sizeof(number) &&
         ulk_builder_append_bytes(builder, number, (size_t)count);
 }
