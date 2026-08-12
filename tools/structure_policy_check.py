@@ -75,6 +75,7 @@ ALLOWED_RELEASE_INDEX = {
     "incubator_intake.v1.toml",
     "provider_capabilities.v1.toml",
     "sdk_package_workunit.v1.toml",
+    "session_last_run_promotion.v1.toml",
 }
 ALLOWED_PACKAGING_ROOTS = {"bsd", "linux", "macos", "portable", "windows"}
 ALLOWED_APPS = {"cli", "daemon", "gui", "tui"}
@@ -203,6 +204,7 @@ def check_required_paths() -> list[str]:
         ROOT / "release" / "index" / "branch_policy.v1.toml",
         ROOT / "release" / "index" / "contract_maturity.v1.toml",
         ROOT / "release" / "index" / "sdk_package_workunit.v1.toml",
+        ROOT / "release" / "index" / "session_last_run_promotion.v1.toml",
         ROOT / "cmake" / "UniversalLauncherConfig.cmake.in",
         ROOT / "cmake" / "README-SDK.md",
         ROOT / "tests" / "sdk" / "consumer" / "CMakeLists.txt",
@@ -211,6 +213,7 @@ def check_required_paths() -> list[str]:
         ROOT / "tests" / "sdk" / "embedded" / "CMakeLists.txt",
         ROOT / "tools" / "cmake_sdk_conformance.py",
         ROOT / "tools" / "sdk_package_check.py",
+        ROOT / "tools" / "session_promotion_check.py",
     ]
     return [f"missing required path {path.relative_to(ROOT)}" for path in required if not path.exists()]
 
