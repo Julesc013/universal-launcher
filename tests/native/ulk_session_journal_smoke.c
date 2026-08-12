@@ -3,6 +3,7 @@
 
 #include "ulk/ulk_api.h"
 
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -142,18 +143,19 @@ static void cleanup_root(const char* root, const char* const* session_ids, size_
 #endif
 }
 
-static unsigned long crc32_bytes(const unsigned char* bytes, size_t size)
+static uint32_t crc32_bytes(const unsigned char* bytes, size_t size)
 {
-    unsigned long crc = 0xfffffffful;
+    uint32_t crc = UINT32_C(0xffffffff);
     size_t index;
     for (index = 0u; index < size; ++index) {
         unsigned int bit;
         crc ^= bytes[index];
         for (bit = 0u; bit < 8u; ++bit) {
-            crc = (crc >> 1u) ^ (0xedb88320ul & (0ul - (crc & 1ul)));
+            crc = (crc >> 1u) ^
+                (UINT32_C(0xedb88320) & (UINT32_C(0) - (crc & UINT32_C(1))));
         }
     }
-    return crc ^ 0xfffffffful;
+    return crc ^ UINT32_C(0xffffffff);
 }
 
 static int write_bytes(const char* path, const char* bytes, size_t size)
@@ -178,7 +180,7 @@ static int convert_record_to_future(const char* path)
     char* checksum;
     FILE* stream = 0;
     size_t size;
-    unsigned long crc;
+    uint32_t crc;
 #if defined(_WIN32)
     if (fopen_s(&stream, path, "rb") != 0) stream = 0;
 #else
@@ -193,7 +195,7 @@ static int convert_record_to_future(const char* path)
     checksum = strrchr(bytes, '|');
     if (checksum == 0 || (size_t)(checksum - bytes) + 10u != size) return 0;
     crc = crc32_bytes((const unsigned char*)bytes, (size_t)(checksum - bytes + 1));
-    (void)snprintf(checksum + 1, 10u, "%08lx\n", crc);
+    (void)snprintf(checksum + 1, 10u, "%08" PRIx32 "\n", crc);
     return write_bytes(path, bytes, size);
 }
 
