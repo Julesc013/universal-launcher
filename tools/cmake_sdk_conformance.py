@@ -17,9 +17,10 @@ CONSUMER = ROOT / "tests" / "sdk" / "consumer"
 EMBEDDED = ROOT / "tests" / "sdk" / "embedded"
 FIXTURE = CONSUMER / "neutral-product.v1.json"
 EXPECTED = {
-    "abi": "1.8",
+    "abi": "1.9",
     "composition": "valid",
     "owned_response": "valid",
+    "session_journal": "valid",
 }
 
 
@@ -227,7 +228,7 @@ def negative_controls(work: Path, prefix: Path, config: str, platform: str | Non
         config,
         platform,
         prefix,
-        {"ULK_FIND_VERSION": "1.8.1", "ULK_FIND_EXACT": "ON"},
+        {"ULK_FIND_VERSION": "1.9.1", "ULK_FIND_EXACT": "ON"},
         expect_failure=True,
     )
     configure_consumer(

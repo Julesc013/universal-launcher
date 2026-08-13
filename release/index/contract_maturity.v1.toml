@@ -6,6 +6,16 @@ provider = "universal-launcher"
 reviewed_on = "2026-08-04"
 
 [[contract]]
+id = "session_record.v1"
+maturity = "fixture-qualified"
+evidence = ["tests/native/ulk_session_journal_smoke.c", "tests/test_session_contract.py"]
+
+[[contract]]
+id = "session_list.v1"
+maturity = "fixture-qualified"
+evidence = ["tests/native/ulk_session_journal_smoke.c", "tests/test_session_contract.py"]
+
+[[contract]]
 id = "product_descriptor.v2"
 maturity = "fixture-qualified"
 evidence = ["tests/fixtures/product-composition/neutral-product.v1.json", "tests/native/ulk_product_composition_smoke.c"]

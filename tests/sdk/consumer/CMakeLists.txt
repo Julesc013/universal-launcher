@@ -6,7 +6,7 @@ project(ulk_sdk_external_consumer LANGUAGES C CXX)
 
 set(ULK_CONSUMPTION_MODE "INSTALLED" CACHE STRING "SOURCE or INSTALLED")
 set(ULK_LINKAGE "STATIC" CACHE STRING "STATIC or SHARED")
-set(ULK_FIND_VERSION "1.8.0" CACHE STRING "Requested package version")
+set(ULK_FIND_VERSION "1.9.0" CACHE STRING "Requested package version")
 option(ULK_FIND_EXACT "Require the exact package version" ON)
 option(ULK_REQUIRE_UNEXPORTED_TARGET "Exercise the unexported-target refusal" OFF)
 

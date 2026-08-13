@@ -1,0 +1,76 @@
+# SPDX-FileCopyrightText: 2026 Jules C
+# SPDX-License-Identifier: MIT
+
+schema = "universal_launcher.session_last_run_promotion.v1"
+workunit = "ULK-SESSION-LAST-RUN-PROMOTION-01"
+status = "qualified_task_candidate_pending_dev_integration"
+reviewed_on = "2026-08-13"
+task_branch = "task/ulk-session-last-run-promotion-01"
+qualified_session_revision = "85df03b292c09a004352b5e66cc6fc4d9fabae51"
+qualified_session_tree = "b3b20261bf5e5cefa64c44e52d03cc5950295afc"
+session_implementation_revision = "6a6e49336d66fb95ce6efce90d480d60f93e66ba"
+canonical_main_before = "1cafe4054297cc11e02458b83d230db0cd064471"
+canonical_main_before_tree = "47018102de4b9fd20af9f77acd4e1e35e51590f3"
+promotion_source_ref = "refs/heads/dev"
+promotion_target_ref = "refs/heads/main"
+package_version = "1.9.0"
+c_abi_major = 1
+c_abi_minor = 9
+implementation_state = "implemented"
+consumer_qualification = "qualified_input_for_facman_adoption_train"
+public_maturity = "experimental_prerelease"
+provider_spi_scope = "bounded_session_and_last_run_subset_not_broad_final_spi"
+
+required_proofs = [
+  "fresh_source_reconstruction",
+  "abi_manifest_and_symbol_additivity",
+  "native_session_fault_tck",
+  "installed_workspace_consumer",
+  "installed_static_consumer",
+  "installed_shared_consumer",
+  "installed_combined_consumer",
+  "relocated_static_consumer",
+  "relocated_shared_consumer",
+  "interruption_and_corruption_recovery",
+]
+
+[compatibility]
+main_before_is_ancestor_of_qualified_session = true
+abi_major_preserved = true
+abi_minor_additive = true
+main_before_exported_symbols = 34
+qualified_candidate_exported_symbols = 40
+preserved_main_before_exported_symbols = 34
+additive_session_exported_symbols = 6
+frozen_abi_1_6_compatibility_preserved = true
+borrowed_client_abi_preserved = true
+owned_response_abi_preserved = true
+product_composition_abi_preserved = true
+setup_handoff_abi_preserved = true
+migration_review = "no_existing_session_journal_state_to_migrate"
+
+[qualification]
+strict_validation = "pass"
+python_tests = 17
+promotion_record_python_tests = 2
+native_tests = 15
+hosted_pull_request_checks = 8
+hosted_merge_head_checks = 1
+required_skips = 0
+installed_sdk_modes = ["workspace", "static", "shared", "combined"]
+relocated_sdk_modes = ["static", "shared"]
+
+[scope]
+process_execution = false
+process_supervision = false
+daemon = false
+dynamic_providers = false
+reference_store_expansion = false
+setup_mutation = false
+consumer_repin = false
+consumer_adoption = false
+factorio_terminology = false
+signing = false
+publication = false
+release_creation = false
+stable_public_spi = false

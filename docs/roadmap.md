@@ -7,7 +7,31 @@ Every new WorkUnit starts from an exact current `dev`, integrates through
 `task/* -> dev`, passes exact-SHA consumer canaries, and is promoted separately
 to canonical `main`. Consumer adoption remains a later exact-pin pull request.
 
-## ULK-CMAKE-SDK-PACKAGE-01 (task complete; review pending)
+## ULK-SESSION-LAST-RUN-PROMOTION-01 (active promotion)
+
+- Exact qualified session revision:
+  `dev@85df03b292c09a004352b5e66cc6fc4d9fabae51`.
+- Reconstruct and compare ABI, symbols, source mode, installed
+  static/shared/combined modes, relocated consumers, and interruption recovery.
+- Promote the bounded experimental session subset through reviewed `dev` to
+  `main`, then synchronize `dev` and leave FacMan repinning to its separate
+  adoption WorkUnit.
+- Add no process execution, daemon, dynamic provider, reference-store
+  expansion, Setup mutation, consumer adoption, signing, or publication.
+
+## ULK-SESSION-LAST-RUN-SUBSET-01 (integrated on dev)
+
+- Exact base: `dev@7d4fd8e25a8d529279c4ad18d983e9cd51839eb7`.
+- Add product-neutral session/operation/attempt identity, running and terminal
+  records, bounded caller-rooted persistence, inspect/list, and authoritative
+  Last Run lookup.
+- Preserve `outcome_unknown` and `recovery_required`, fail closed on corrupt or
+  future records, and prove idempotent/interruption-safe writes through the
+  native ABI and installed SDK consumer.
+- Add no process execution, daemon, dynamic provider, Setup mutation, product
+  terminology, consumer repin, signing, or publication authority.
+
+## ULK-CMAKE-SDK-PACKAGE-01 (integrated on dev)
 
 - Exact base: `dev@719a3ec240831547071d69098e1fe8c76f327fb7`.
 - Package only the accepted ABI 1.8 and fixture-qualified contracts as

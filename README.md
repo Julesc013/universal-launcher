@@ -5,6 +5,9 @@ references, instances, profiles, account references, artifact sets, launch plans
 dry-run, audit, diagnostics, daemon protocol, and frontend-neutral command
 clients. It also owns product-neutral durable operation identity and terminal
 outcome semantics shared by direct, process, and future daemon transports.
+ABI 1.9 also exposes a bounded, caller-rooted session journal for durable
+running/terminal records and Last Run lookup. It records consumer-supplied
+facts and does not itself execute or monitor processes.
 
 It does not install, repair, uninstall, or roll back products. Those operations
 belong to Universal Setup. It also does not contain Factorio-specific discovery,
@@ -113,7 +116,8 @@ cmake --build build/native-smoke
 
 ## CMake SDK
 
-Release 1.8.0 can be installed and consumed without a sibling source checkout:
+The 1.9.0 candidate can be installed and consumed without a sibling source
+checkout:
 
 ```powershell
 cmake -S . -B build/sdk -DULK_BUILD_TESTS=OFF -DULK_BUILD_APPS=OFF
@@ -126,8 +130,8 @@ An external consumer then uses
 `UniversalLauncher::CoreStatic`,
 `UniversalLauncher::CoreShared`, or the header-only
 `UniversalLauncher::Headers` surface. See [the installed SDK guide](cmake/README-SDK.md).
-The package version remains separate from C ABI 1.8 and fixture-qualified
-contract maturity.
+The package version remains separate from C ABI 1.9 and the session subset's
+experimental prerelease contract maturity.
 
 The current repository is an incremental production kernel. The authoritative
 command graph, Setup handoff, frontend-neutral client/transport ABI,

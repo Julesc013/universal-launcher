@@ -63,6 +63,7 @@ ALLOWED_SCHEMA_ROOTS = {
     "product",
     "profile",
     "reference",
+    "session",
     "setup",
 }
 ALLOWED_CONTENT_ROOTS = {"policy", "templates"}
@@ -74,6 +75,7 @@ ALLOWED_RELEASE_INDEX = {
     "incubator_intake.v1.toml",
     "provider_capabilities.v1.toml",
     "sdk_package_workunit.v1.toml",
+    "session_last_run_promotion.v1.toml",
 }
 ALLOWED_PACKAGING_ROOTS = {"bsd", "linux", "macos", "portable", "windows"}
 ALLOWED_APPS = {"cli", "daemon", "gui", "tui"}
@@ -156,6 +158,7 @@ def check_required_paths() -> list[str]:
         ROOT / "include" / "ulk" / "ulk_command.h",
         ROOT / "include" / "ulk" / "ulk_client.h",
         ROOT / "include" / "ulk" / "ulk_operation.h",
+        ROOT / "include" / "ulk" / "ulk_session.h",
         ROOT / "include" / "ulk" / "ulk_owned_response.h",
         ROOT / "include" / "ulk" / "ulk_product_composition.h",
         ROOT / "include" / "ulk" / "ulk_reference_model.h",
@@ -167,6 +170,7 @@ def check_required_paths() -> list[str]:
         ROOT / "runtime" / "client" / "ulk_owned_response.c",
         ROOT / "runtime" / "launcher" / "kernel" / "ulk_product_composition.c",
         ROOT / "runtime" / "launcher" / "kernel" / "ulk_reference_model.c",
+        ROOT / "runtime" / "launcher" / "kernel" / "ulk_session.c",
         ROOT / "contracts" / "abi" / "ulk_c_abi.v1.toml",
         ROOT / "runtime" / "launcher" / "artifact_set" / "README.md",
         ROOT / "contracts" / "schema" / "command" / "command_request.v1.schema.json",
@@ -176,11 +180,14 @@ def check_required_paths() -> list[str]:
         ROOT / "contracts" / "schema" / "artifact_set" / "artifact_set.v1.schema.json",
         ROOT / "contracts" / "schema" / "launch_plan" / "launch_plan.v1.schema.json",
         ROOT / "contracts" / "schema" / "composition" / "product_composition.v1.schema.json",
+        ROOT / "contracts" / "schema" / "session" / "session_record.v1.schema.json",
+        ROOT / "contracts" / "schema" / "session" / "session_list.v1.schema.json",
         ROOT / "docs" / "architecture" / "boundary.md",
         ROOT / "docs" / "architecture" / "ecosystem_vision.md",
         ROOT / "docs" / "architecture" / "reference_model.md",
         ROOT / "docs" / "architecture" / "owned_responses.md",
         ROOT / "docs" / "architecture" / "product_composition.md",
+        ROOT / "docs" / "architecture" / "session_journal.md",
         ROOT / "docs" / "architecture" / "root_grammar.md",
         ROOT / "docs" / "roadmap.md",
         ROOT / "docs" / "governance" / "branch_model.md",
@@ -189,12 +196,15 @@ def check_required_paths() -> list[str]:
         ROOT / "tests" / "native" / "ulk_abi_layout_smoke.c",
         ROOT / "tests" / "native" / "ulk_owned_response_export_smoke.c",
         ROOT / "tests" / "native" / "ulk_product_composition_smoke.c",
+        ROOT / "tests" / "native" / "ulk_session_journal_smoke.c",
         ROOT / "tools" / "abi_contract_check.py",
         ROOT / "tools" / "product_composition_contract_check.py",
+        ROOT / "tools" / "session_contract_check.py",
         ROOT / "tools" / "branch_policy_check.py",
         ROOT / "release" / "index" / "branch_policy.v1.toml",
         ROOT / "release" / "index" / "contract_maturity.v1.toml",
         ROOT / "release" / "index" / "sdk_package_workunit.v1.toml",
+        ROOT / "release" / "index" / "session_last_run_promotion.v1.toml",
         ROOT / "cmake" / "UniversalLauncherConfig.cmake.in",
         ROOT / "cmake" / "README-SDK.md",
         ROOT / "tests" / "sdk" / "consumer" / "CMakeLists.txt",
@@ -203,6 +213,7 @@ def check_required_paths() -> list[str]:
         ROOT / "tests" / "sdk" / "embedded" / "CMakeLists.txt",
         ROOT / "tools" / "cmake_sdk_conformance.py",
         ROOT / "tools" / "sdk_package_check.py",
+        ROOT / "tools" / "session_promotion_check.py",
     ]
     return [f"missing required path {path.relative_to(ROOT)}" for path in required if not path.exists()]
 

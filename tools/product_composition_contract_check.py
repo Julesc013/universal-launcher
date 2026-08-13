@@ -134,7 +134,7 @@ def check() -> list[str]:
         for contract in contracts
         if contract.get("maturity") == "fixture-qualified" and contract.get("evidence")
     }
-    if maturity.get("provider") != "universal-launcher" or observed != EXPECTED_MATURITY:
+    if maturity.get("provider") != "universal-launcher" or not EXPECTED_MATURITY.issubset(observed):
         problems.append("composition contracts must be recorded individually as fixture-qualified")
     return problems
 

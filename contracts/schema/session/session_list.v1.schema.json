@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://julesc013.github.io/universal-launcher/contracts/session/session_list.v1.schema.json",
+  "title": "Universal Launcher Session List",
+  "type": "object",
+  "required": ["schema", "sessions"],
+  "properties": {
+    "schema": { "const": "ulk.session_list.v1" },
+    "sessions": {
+      "type": "array",
+      "maxItems": 1024,
+      "items": { "$ref": "session_record.v1.schema.json" }
+    }
+  },
+  "additionalProperties": false
+}
