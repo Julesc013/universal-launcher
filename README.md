@@ -6,7 +6,8 @@ dry-run, audit, diagnostics, daemon protocol, and frontend-neutral command
 clients. It also owns product-neutral durable operation identity and terminal
 outcome semantics shared by direct, process, and future daemon transports.
 ABI 1.9 also exposes a bounded, caller-rooted session journal for durable
-running/terminal records and Last Run lookup. It records consumer-supplied
+running/terminal records and Last Run lookup. Last Run uses durable admission
+order rather than caller timestamp precision. The journal records consumer-supplied
 facts and does not itself execute or monitor processes.
 
 It does not install, repair, uninstall, or roll back products. Those operations

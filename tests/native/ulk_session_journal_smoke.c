@@ -190,13 +190,100 @@ static int convert_record_to_future(const char* path)
     size = fread(bytes, 1u, sizeof(bytes) - 1u, stream);
     if (ferror(stream) || fclose(stream) != 0 || size < 32u) return 0;
     bytes[size] = '\0';
-    if (strncmp(bytes, "ULK_SESSION_RECORD_V1|", 22u) != 0) return 0;
-    bytes[20] = '2';
+    if (strncmp(bytes, "ULK_SESSION_RECORD_V2|", 22u) != 0) return 0;
+    bytes[20] = '3';
     checksum = strrchr(bytes, '|');
     if (checksum == 0 || (size_t)(checksum - bytes) + 10u != size) return 0;
     crc = crc32_bytes((const unsigned char*)bytes, (size_t)(checksum - bytes + 1));
     (void)snprintf(checksum + 1, 10u, "%08" PRIx32 "\n", crc);
     return write_bytes(path, bytes, size);
+}
+
+static int convert_record_to_legacy_v1(const char* path)
+{
+    char bytes[65536];
+    char* checksum;
+    char* commit_order;
+    FILE* stream = 0;
+    size_t size;
+    uint32_t crc;
+#if defined(_WIN32)
+    if (fopen_s(&stream, path, "rb") != 0) stream = 0;
+#else
+    stream = fopen(path, "rb");
+#endif
+    if (stream == 0) return 0;
+    size = fread(bytes, 1u, sizeof(bytes) - 1u, stream);
+    if (ferror(stream) || fclose(stream) != 0 || size < 32u) return 0;
+    bytes[size] = '\0';
+    if (strncmp(bytes, "ULK_SESSION_RECORD_V2|", 22u) != 0) return 0;
+    checksum = strrchr(bytes, '|');
+    if (checksum == 0 || (size_t)(checksum - bytes) + 10u != size) return 0;
+    commit_order = checksum;
+    while (commit_order > bytes && commit_order[-1] != '|') --commit_order;
+    if (commit_order == bytes || commit_order == checksum) return 0;
+    memmove(commit_order, checksum + 1u, strlen(checksum + 1u) + 1u);
+    bytes[20] = '1';
+    checksum = commit_order - 1u;
+    crc = crc32_bytes((const unsigned char*)bytes, (size_t)(checksum - bytes + 1));
+    (void)snprintf(checksum + 1u, 10u, "%08" PRIx32 "\n", crc);
+    return write_bytes(path, bytes, strlen(bytes));
+}
+
+static int prove_equal_timestamp_append_order(int process_id)
+{
+    char root[256];
+    char path[512];
+    char json[8192];
+    ulk_size required = 0u;
+    ulk_session_lookup_status_v1 lookup = ULK_SESSION_LOOKUP_NOT_FOUND;
+    ulk_session_journal_v1 journal;
+    ulk_session_record_v1 legacy;
+    ulk_session_record_v1 middle;
+    ulk_session_record_v1 newest;
+    ulk_operation_result_v1 legacy_result;
+    ulk_operation_result_v1 middle_result;
+    ulk_operation_result_v1 newest_result;
+    ulk_error_v1 error;
+    const char* ids[] = {"same-time-z", "same-time-y", "same-time-a"};
+    const char* timestamp = "2026-08-12T02:00:00Z";
+
+    (void)snprintf(root, sizeof(root), "ulk-session-order-%d", process_id);
+    memset(&journal, 0, sizeof(journal));
+    journal.struct_size = sizeof(journal);
+    journal.root = view(root);
+    journal.maximum_records = 4u;
+    initialize_error(&error);
+
+    initialize_running(&legacy, ids[0], "same-time-operation-z", "same-time-attempt-z",
+        "fixture://runnable/equal-time", timestamp);
+    make_terminal(&legacy, &legacy_result, ULK_OPERATION_COMPLETED, timestamp);
+    if (ulk_session_journal_write_v1(&journal, &legacy, &error) != ULK_STATUS_OK) return 0;
+    (void)snprintf(path, sizeof(path), "%s/sessions/%s.session", root, ids[0]);
+    if (!convert_record_to_legacy_v1(path)) return 0;
+
+    initialize_running(&middle, ids[1], "same-time-operation-y", "same-time-attempt-y",
+        "fixture://runnable/equal-time", timestamp);
+    make_terminal(&middle, &middle_result, ULK_OPERATION_COMPLETED, timestamp);
+    if (ulk_session_journal_write_v1(&journal, &middle, &error) != ULK_STATUS_OK) return 0;
+    initialize_running(&newest, ids[2], "same-time-operation-a", "same-time-attempt-a",
+        "fixture://runnable/equal-time", timestamp);
+    make_terminal(&newest, &newest_result, ULK_OPERATION_COMPLETED, timestamp);
+    if (ulk_session_journal_write_v1(&journal, &newest, &error) != ULK_STATUS_OK) return 0;
+
+    if (ulk_session_journal_last_run_v1(&journal, view("fixture://runnable/equal-time"),
+            &lookup, json, sizeof(json), &required, &error) != ULK_STATUS_OK ||
+        lookup != ULK_SESSION_LOOKUP_FOUND ||
+        strstr(json, "\"operation_id\":\"same-time-operation-a\"") == 0) return 0;
+    if (ulk_session_journal_list_v1(&journal, 3u, json, sizeof(json),
+            &required, &error) != ULK_STATUS_OK ||
+        strstr(json, "same-time-a") == 0 || strstr(json, "same-time-y") == 0 ||
+        strstr(json, "same-time-z") == 0 ||
+        !(strstr(json, "same-time-a") < strstr(json, "same-time-y") &&
+          strstr(json, "same-time-y") < strstr(json, "same-time-z"))) return 0;
+
+    cleanup_root(root, ids, sizeof(ids) / sizeof(ids[0]));
+    return 1;
 }
 
 static int prove_failure_modes(int process_id)
@@ -331,6 +418,7 @@ int main(void)
     CHECK(view_is(error.detail, "session_output_buffer_too_small"), 31);
 
     CHECK(prove_failure_modes(ULK_TEST_PID()), 32);
+    CHECK(prove_equal_timestamp_append_order(ULK_TEST_PID()), 33);
 
     cleanup_root(root, ids, sizeof(ids) / sizeof(ids[0]));
     return 0;
