@@ -19,6 +19,7 @@ from tools import (
     license_policy_check,
     operation_outcome_contract_check,
     owned_response_contract_check,
+    provider_package_manifest,
     product_composition_contract_check,
     reference_model_contract_check,
     sdk_package_check,
@@ -45,6 +46,7 @@ def main() -> int:
         ("reference-model-contract", reference_model_contract_check.main),
         ("sdk-package", sdk_package_check.main),
         ("session-promotion", session_promotion_check.main),
+        ("provider-package-manifest", provider_package_manifest.main_for_check),
     ]
     failed: list[str] = []
     for name, check in checks:

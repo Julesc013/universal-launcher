@@ -117,7 +117,7 @@ cmake --build build/native-smoke
 
 ## CMake SDK
 
-The 1.9.0 candidate can be installed and consumed without a sibling source
+The 1.9.1 candidate can be installed and consumed without a sibling source
 checkout:
 
 ```powershell
@@ -127,11 +127,14 @@ cmake --install build/sdk --config Release --prefix out/ulk-sdk
 ```
 
 An external consumer then uses
-`find_package(UniversalLauncher 1.8.0 EXACT CONFIG REQUIRED)` and links one of
+`find_package(UniversalLauncher 1.9.1 EXACT CONFIG REQUIRED)` and links one of
 `UniversalLauncher::CoreStatic`,
 `UniversalLauncher::CoreShared`, or the header-only
 `UniversalLauncher::Headers` surface. See [the installed SDK guide](cmake/README-SDK.md).
-The package version remains separate from C ABI 1.9 and the session subset's
+The installed package also contains
+`share/universal-launcher/provider-package-manifest.v1.json`, generated from
+the exact installed bytes. The package version remains separate from C ABI 1.9
+and the session subset's
 experimental prerelease contract maturity.
 
 The current repository is an incremental production kernel. The authoritative

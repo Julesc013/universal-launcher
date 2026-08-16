@@ -12,6 +12,10 @@ set_and_check(
   UniversalLauncher_ABI_MANIFEST
   "@PACKAGE_ULK_INSTALL_ABI_MANIFEST@"
 )
+set_and_check(
+  UniversalLauncher_PROVIDER_PACKAGE_MANIFEST
+  "@PACKAGE_ULK_INSTALL_PROVIDER_MANIFEST@"
+)
 
 include("${CMAKE_CURRENT_LIST_DIR}/UniversalLauncherTargets.cmake")
 check_required_components(UniversalLauncher)

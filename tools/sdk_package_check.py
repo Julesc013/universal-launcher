@@ -89,14 +89,16 @@ def check() -> list[str]:
         problems.extend(check_data(tomllib.load(handle)))
 
     cmake = (ROOT / "CMakeLists.txt").read_text(encoding="utf-8")
-    if not re.search(r"project\(universal_launcher\s+VERSION\s+1\.9\.0", cmake):
-        problems.append("current CMake project version must be 1.9.0")
+    if not re.search(r"project\(universal_launcher\s+VERSION\s+1\.9\.1", cmake):
+        problems.append("current CMake project version must be 1.9.1")
     for token in (
         "GNUInstallDirs",
         "CMakePackageConfigHelpers",
         "configure_package_config_file",
         "write_basic_package_version_file",
         "install(EXPORT UniversalLauncherTargets",
+        "GenerateProviderPackageManifest.cmake",
+        "ULK_INSTALL_PROVIDER_MANIFEST",
         "$<BUILD_INTERFACE:",
         "$<INSTALL_INTERFACE:",
     ):
