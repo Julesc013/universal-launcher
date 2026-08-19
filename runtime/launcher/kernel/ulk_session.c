@@ -50,6 +50,7 @@ typedef struct ulk_session_owned_record {
     int recovery_required;
     int exit_code_known;
     int64_t exit_code;
+    int64_t commit_order;
 } ulk_session_owned_record;
 
 typedef struct ulk_session_record_set {
@@ -652,7 +653,7 @@ static int ulk_serialize_record(
         record->recovery_reference, record->relaunch_reference
     };
     size_t index;
-    if (!ulk_builder_append(output, "ULK_SESSION_RECORD_V1|")) return 0;
+    if (!ulk_builder_append(output, "ULK_SESSION_RECORD_V2|")) return 0;
     for (index = 0u; index < sizeof(string_fields) / sizeof(string_fields[0]); ++index) {
         if (!ulk_builder_append_hex(output, string_fields[index]) || !ulk_builder_append(output, "|")) return 0;
     }
@@ -668,6 +669,9 @@ static int ulk_serialize_record(
     for (index = 0u; index < sizeof(ending_string_fields) / sizeof(ending_string_fields[0]); ++index) {
         if (!ulk_builder_append_hex(output, ending_string_fields[index]) || !ulk_builder_append(output, "|")) return 0;
     }
+    if (record->commit_order <= 0 ||
+        !ulk_builder_append_integer(output, record->commit_order) ||
+        !ulk_builder_append(output, "|")) return 0;
     checksum = ulk_crc32((const unsigned char*)output->data, output->size);
     (void)snprintf(checksum_text, sizeof(checksum_text), "%08" PRIx32 "\n", checksum);
     return ulk_builder_append(output, checksum_text);
@@ -678,7 +682,7 @@ static ulk_disk_record_status ulk_parse_record(
     size_t size,
     ulk_session_owned_record* record)
 {
-    char* fields[19];
+    char* fields[20];
     size_t field_count = 1u;
     size_t index;
     char* checksum_separator;
@@ -686,6 +690,7 @@ static ulk_disk_record_status ulk_parse_record(
     unsigned long expected_checksum;
     int state;
     int outcome;
+    int disk_version;
     if (size < 2u || text[size - 1u] != '\n') return ULK_DISK_RECORD_CORRUPT;
     text[size - 1u] = '\0';
     checksum_separator = strrchr(text, '|');
@@ -704,12 +709,14 @@ static ulk_disk_record_status ulk_parse_record(
             fields[field_count++] = text + index + 1u;
         }
     }
-    if (strcmp(fields[0], "ULK_SESSION_RECORD_V1") != 0) {
-        return strncmp(fields[0], "ULK_SESSION_RECORD_", 19u) == 0
-            ? ULK_DISK_RECORD_INCOMPATIBLE
-            : ULK_DISK_RECORD_CORRUPT;
+    if (strcmp(fields[0], "ULK_SESSION_RECORD_V1") == 0) disk_version = 1;
+    else if (strcmp(fields[0], "ULK_SESSION_RECORD_V2") == 0) disk_version = 2;
+    else return strncmp(fields[0], "ULK_SESSION_RECORD_", 19u) == 0
+        ? ULK_DISK_RECORD_INCOMPATIBLE
+        : ULK_DISK_RECORD_CORRUPT;
+    if (field_count != (disk_version == 1 ? 18u : 19u)) {
+        return ULK_DISK_RECORD_CORRUPT;
     }
-    if (field_count != 18u) return ULK_DISK_RECORD_CORRUPT;
     memset(record, 0, sizeof(*record));
     if (!ulk_decode_hex(fields[1], record->session_id, sizeof(record->session_id)) ||
         !ulk_decode_hex(fields[2], record->operation_id, sizeof(record->operation_id)) ||
@@ -727,7 +734,10 @@ static ulk_disk_record_status ulk_parse_record(
         !ulk_decode_hex(fields[14], record->recovery_transaction, sizeof(record->recovery_transaction)) ||
         !ulk_decode_hex(fields[15], record->recovery_inspect_command, sizeof(record->recovery_inspect_command)) ||
         !ulk_decode_hex(fields[16], record->recovery_reference, sizeof(record->recovery_reference)) ||
-        !ulk_decode_hex(fields[17], record->relaunch_reference, sizeof(record->relaunch_reference))) {
+        !ulk_decode_hex(fields[17], record->relaunch_reference, sizeof(record->relaunch_reference)) ||
+        (disk_version == 2 &&
+            (!ulk_parse_i64(fields[18], &record->commit_order) ||
+             record->commit_order <= 0))) {
         return ULK_DISK_RECORD_CORRUPT;
     }
     record->state = (ulk_session_state_v1)state;
@@ -818,6 +828,9 @@ static int ulk_record_compare_descending(const void* left_value, const void* rig
 {
     const ulk_session_owned_record* left = (const ulk_session_owned_record*)left_value;
     const ulk_session_owned_record* right = (const ulk_session_owned_record*)right_value;
+    if (left->commit_order != right->commit_order) {
+        return right->commit_order > left->commit_order ? 1 : -1;
+    }
     const int time_order = strcmp(right->started_at, left->started_at);
     return time_order != 0 ? time_order : strcmp(right->session_id, left->session_id);
 }
@@ -1025,6 +1038,7 @@ int ULK_CALL ulk_session_journal_write_v1(
     ulk_text_builder serialized;
     size_t index;
     size_t maximum;
+    int64_t maximum_commit_order = 0;
     int result = ULK_STATUS_ERROR;
     memset(&set, 0, sizeof(set));
     memset(&serialized, 0, sizeof(serialized));
@@ -1048,6 +1062,9 @@ int ULK_CALL ulk_session_journal_write_v1(
     }
     for (index = 0u; index < set.count; ++index) {
         const ulk_session_owned_record* existing = &set.values[index];
+        if (existing->commit_order > maximum_commit_order) {
+            maximum_commit_order = existing->commit_order;
+        }
         if (strcmp(existing->operation_id, requested.operation_id) == 0 &&
             strcmp(existing->attempt_id, requested.attempt_id) == 0 &&
             strcmp(existing->session_id, requested.session_id) != 0) {
@@ -1065,7 +1082,17 @@ int ULK_CALL ulk_session_journal_write_v1(
                         ? "session_terminal_immutable" : "session_idempotency_conflict");
                 goto cleanup;
             }
+            requested.commit_order = existing->commit_order;
         }
+    }
+    if (requested.commit_order == 0) {
+        if (maximum_commit_order == INT64_MAX) {
+            ulk_fail(error, ULK_STATUS_ERROR,
+                "Session journal commit order is exhausted",
+                "session_commit_order_exhausted");
+            goto cleanup;
+        }
+        requested.commit_order = maximum_commit_order + 1;
     }
     if (!ulk_serialize_record(&requested, &serialized)) {
         ulk_fail(error, ULK_STATUS_ERROR,

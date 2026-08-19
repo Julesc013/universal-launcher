@@ -60,6 +60,7 @@ ALLOWED_SCHEMA_ROOTS = {
     "instance",
     "launch_plan",
     "launcher",
+    "package",
     "product",
     "profile",
     "reference",

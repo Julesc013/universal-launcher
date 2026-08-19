@@ -118,8 +118,8 @@ def check() -> list[str]:
     problems = check_data(data)
 
     cmake = (ROOT / "CMakeLists.txt").read_text(encoding="utf-8")
-    if not re.search(r"project\(universal_launcher\s+VERSION\s+1\.9\.0", cmake):
-        problems.append("promotion candidate package version must remain 1.9.0")
+    if not re.search(r"project\(universal_launcher\s+VERSION\s+1\.9\.1", cmake):
+        problems.append("current package truth must be 1.9.1 after the 1.9.0 promotion record")
     abi = (ROOT / "contracts" / "abi" / "ulk_c_abi.v1.toml").read_text(
         encoding="utf-8"
     )
