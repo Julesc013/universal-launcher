@@ -136,6 +136,24 @@ def install_provider(build_dir: Path, prefix: Path, config: str, static: bool, s
     )
     build(build_dir, config)
     run(["cmake", "--install", str(build_dir), "--config", config, "--prefix", str(prefix)])
+    linkage = "combined" if static and shared else "static" if static else "shared"
+    run([
+        sys.executable,
+        str(ROOT / "tools" / "provider_package_manifest.py"),
+        "verify",
+        "--prefix",
+        str(prefix),
+        "--expected-package-version",
+        "1.9.1",
+        "--expected-c-abi",
+        "1.9",
+        "--expected-journal-read-versions",
+        "1,2",
+        "--expected-journal-write-version",
+        "2",
+        "--expected-linkage",
+        linkage,
+    ])
 
 
 def configure_consumer(build_dir: Path, mode: str, linkage: str, config: str, platform: str | None, prefix: Path | None = None, extra: dict[str, str] | None = None, expect_failure: bool = False) -> subprocess.CompletedProcess[str]:
@@ -198,6 +216,15 @@ def prove_install_mode(work: Path, linkage: str, config: str, platform: str | No
     build(relocated_build, config)
     relocated = execute_consumer(relocated_build, config, prefix_b)
     scan_relocation_metadata(prefix_b, [ROOT, provider_build, prefix_a])
+    run([
+        sys.executable,
+        str(ROOT / "tools" / "provider_package_manifest.py"),
+        "verify",
+        "--prefix",
+        str(prefix_b),
+        "--expected-linkage",
+        lower,
+    ])
 
     if linkage == "SHARED":
         runtimes = dynamic_runtime_files(prefix_b)
@@ -228,7 +255,7 @@ def negative_controls(work: Path, prefix: Path, config: str, platform: str | Non
         config,
         platform,
         prefix,
-        {"ULK_FIND_VERSION": "1.9.1", "ULK_FIND_EXACT": "ON"},
+        {"ULK_FIND_VERSION": "1.9.0", "ULK_FIND_EXACT": "ON"},
         expect_failure=True,
     )
     configure_consumer(

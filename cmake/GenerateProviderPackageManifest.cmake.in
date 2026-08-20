@@ -1,0 +1,40 @@
+# SPDX-FileCopyrightText: 2026 Jules C
+# SPDX-License-Identifier: MIT
+
+set(_ulk_provider_manifest_command
+  "@Python3_EXECUTABLE@"
+  "@CMAKE_CURRENT_SOURCE_DIR@/tools/provider_package_manifest.py"
+  generate
+  --prefix "${CMAKE_INSTALL_PREFIX}"
+  --source-root "@CMAKE_CURRENT_SOURCE_DIR@"
+  --source-repository "@ULK_SOURCE_REPOSITORY@"
+  --source-commit "@ULK_SOURCE_COMMIT@"
+  --source-tree "@ULK_SOURCE_TREE@"
+  --source-ref "@ULK_SOURCE_REF@"
+  --package-version "@PROJECT_VERSION@"
+  --os "@CMAKE_SYSTEM_NAME@"
+  --architecture "@ULK_PROVIDER_ARCHITECTURE@"
+  --linkage "@ULK_PROVIDER_LINKAGE@"
+  --configuration "${CMAKE_INSTALL_CONFIG_NAME}"
+  --toolchain-id "@CMAKE_C_COMPILER_ID@"
+  --toolchain-version "@CMAKE_C_COMPILER_VERSION@"
+  --compiler "@CMAKE_C_COMPILER@"
+)
+
+if("@ULK_ALLOW_UNVERIFIABLE_ARCHIVE_SOURCE@" STREQUAL "ON")
+  list(APPEND _ulk_provider_manifest_command --allow-unverifiable-source)
+endif()
+
+execute_process(
+  COMMAND ${_ulk_provider_manifest_command}
+  RESULT_VARIABLE _ulk_provider_manifest_result
+  OUTPUT_VARIABLE _ulk_provider_manifest_output
+  ERROR_VARIABLE _ulk_provider_manifest_error
+)
+if(NOT _ulk_provider_manifest_result EQUAL 0)
+  message(FATAL_ERROR
+    "Provider package manifest generation failed:\n"
+    "${_ulk_provider_manifest_output}${_ulk_provider_manifest_error}"
+  )
+endif()
+message(STATUS "${_ulk_provider_manifest_output}")
