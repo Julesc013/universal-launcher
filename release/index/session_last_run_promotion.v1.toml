@@ -3,8 +3,10 @@
 
 schema = "universal_launcher.session_last_run_promotion.v1"
 workunit = "ULK-SESSION-LAST-RUN-PROMOTION-01"
-status = "qualified_task_candidate_pending_dev_integration"
+status = "integrated_canonical_main_and_dev_synchronized"
 reviewed_on = "2026-08-13"
+closed_on = "2026-08-26"
+closeout_workunit = "ULK-1.9.1-CURRENT-TRUTH-CLOSEOUT-01"
 task_branch = "task/ulk-session-last-run-promotion-01"
 qualified_session_revision = "85df03b292c09a004352b5e66cc6fc4d9fabae51"
 qualified_session_tree = "b3b20261bf5e5cefa64c44e52d03cc5950295afc"
@@ -14,12 +16,19 @@ canonical_main_before_tree = "47018102de4b9fd20af9f77acd4e1e35e51590f3"
 promotion_source_ref = "refs/heads/dev"
 promotion_target_ref = "refs/heads/main"
 package_version = "1.9.0"
+current_package_version = "1.9.1"
 c_abi_major = 1
 c_abi_minor = 9
 implementation_state = "implemented"
 consumer_qualification = "qualified_input_for_facman_adoption_train"
 public_maturity = "experimental_prerelease"
 provider_spi_scope = "bounded_session_and_last_run_subset_not_broad_final_spi"
+actual_dev_integration = "e6de83ad1e1a2c646d31eb2ca68aa5cddb323b4a"
+actual_dev_integration_tree = "d877bfa3a86158f65705facf757e8700a067d077"
+actual_main_promotion = "09f0639ab6529fba2f2aa22e9bf68e5eebed0553"
+actual_main_promotion_tree = "d877bfa3a86158f65705facf757e8700a067d077"
+actual_dev_synchronization = "2e77e15c8bcdeb833a0a45aab3421886b72cc70c"
+actual_dev_synchronization_tree = "d877bfa3a86158f65705facf757e8700a067d077"
 
 required_proofs = [
   "fresh_source_reconstruction",
@@ -59,6 +68,22 @@ hosted_merge_head_checks = 1
 required_skips = 0
 installed_sdk_modes = ["workspace", "static", "shared", "combined"]
 relocated_sdk_modes = ["static", "shared"]
+
+[current]
+canonical_main_revision = "5479939ca5cbc9ee0f901608a92012778b4752ae"
+synchronized_dev_revision = "5c2b6eb8ead53db863103a5190fa4fa130f64d42"
+shared_tree = "7728e4d415539a0f24e6f17aa7d22be00cc99d80"
+main_is_ancestor_of_dev = true
+main_and_dev_same_tree = true
+facman_consumed_pin = "5479939ca5cbc9ee0f901608a92012778b4752ae"
+journal_disk_compatibility = "read_v1_v2_write_v2"
+generic_process_runtime = false
+daemon_or_service_runtime = false
+ulu_maturity = "experimental"
+tags = 0
+github_releases = 0
+signed = false
+published = false
 
 [scope]
 process_execution = false

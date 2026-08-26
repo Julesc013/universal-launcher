@@ -117,8 +117,8 @@ cmake --build build/native-smoke
 
 ## CMake SDK
 
-The 1.9.1 candidate can be installed and consumed without a sibling source
-checkout:
+The canonical 1.9.1 package can be installed and consumed without a sibling
+source checkout:
 
 ```powershell
 cmake -S . -B build/sdk -DULK_BUILD_TESTS=OFF -DULK_BUILD_APPS=OFF
@@ -137,6 +137,10 @@ the exact installed bytes. The package version remains separate from C ABI 1.9
 and the session subset's
 experimental prerelease contract maturity.
 
+Canonical provider source is `main@5479939ca5cbc9ee0f901608a92012778b4752ae`;
+`dev@5c2b6eb8ead53db863103a5190fa4fa130f64d42` contains that promotion and
+has the same source tree. FacMan consumes that canonical `main` revision.
+
 The current repository is an incremental production kernel. The authoritative
 command graph, Setup handoff, frontend-neutral client/transport ABI,
 product-neutral operation-outcome ABI, allocator-owned command-response ABI,
@@ -145,12 +149,14 @@ validation/composition ABI are implemented. Product descriptors, entrypoint
 descriptors, launch capabilities, composition records, and contract-set
 identity are defined by the additive ABI 1.8 contracts documented in
 [`docs/architecture/product_composition.md`](docs/architecture/product_composition.md).
-Reference persistence, daemon runtime, and platform process services remain
-incomplete.
+The session journal reads disk formats v1 and v2 and writes v2. Generic process
+runtime, daemon/service execution, and platform process services are not
+implemented. The separate `ulu` utility/UI/platform ABI remains experimental.
 
 ## License
 
 Universal Launcher is licensed under the [MIT License](LICENSE). The canonical
 machine-readable package identity is `release/license.v1.toml`. That license
-choice does not imply signing, publication, or publisher authenticity; current
-artifacts remain unsigned and unpublished.
+choice does not imply signing, publication, or publisher authenticity. No tag
+or GitHub release exists for 1.9.1; current artifacts remain unsigned and
+unpublished.

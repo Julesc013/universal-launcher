@@ -30,8 +30,10 @@ def check_data(data: dict[str, Any]) -> list[str]:
     expected = {
         "schema": "universal_launcher.session_last_run_promotion.v1",
         "workunit": "ULK-SESSION-LAST-RUN-PROMOTION-01",
-        "status": "qualified_task_candidate_pending_dev_integration",
+        "status": "integrated_canonical_main_and_dev_synchronized",
         "reviewed_on": "2026-08-13",
+        "closed_on": "2026-08-26",
+        "closeout_workunit": "ULK-1.9.1-CURRENT-TRUTH-CLOSEOUT-01",
         "task_branch": "task/ulk-session-last-run-promotion-01",
         "qualified_session_revision": "85df03b292c09a004352b5e66cc6fc4d9fabae51",
         "qualified_session_tree": "b3b20261bf5e5cefa64c44e52d03cc5950295afc",
@@ -41,12 +43,19 @@ def check_data(data: dict[str, Any]) -> list[str]:
         "promotion_source_ref": "refs/heads/dev",
         "promotion_target_ref": "refs/heads/main",
         "package_version": "1.9.0",
+        "current_package_version": "1.9.1",
         "c_abi_major": 1,
         "c_abi_minor": 9,
         "implementation_state": "implemented",
         "consumer_qualification": "qualified_input_for_facman_adoption_train",
         "public_maturity": "experimental_prerelease",
         "provider_spi_scope": "bounded_session_and_last_run_subset_not_broad_final_spi",
+        "actual_dev_integration": "e6de83ad1e1a2c646d31eb2ca68aa5cddb323b4a",
+        "actual_dev_integration_tree": "d877bfa3a86158f65705facf757e8700a067d077",
+        "actual_main_promotion": "09f0639ab6529fba2f2aa22e9bf68e5eebed0553",
+        "actual_main_promotion_tree": "d877bfa3a86158f65705facf757e8700a067d077",
+        "actual_dev_synchronization": "2e77e15c8bcdeb833a0a45aab3421886b72cc70c",
+        "actual_dev_synchronization_tree": "d877bfa3a86158f65705facf757e8700a067d077",
         "required_proofs": EXPECTED_PROOFS,
     }
     for field, value in expected.items():
@@ -83,6 +92,27 @@ def check_data(data: dict[str, Any]) -> list[str]:
     for field, value in expected_qualification.items():
         if qualification.get(field) != value:
             problems.append(f"session promotion qualification.{field} must be {value!r}")
+
+    current = data.get("current", {})
+    expected_current = {
+        "canonical_main_revision": "5479939ca5cbc9ee0f901608a92012778b4752ae",
+        "synchronized_dev_revision": "5c2b6eb8ead53db863103a5190fa4fa130f64d42",
+        "shared_tree": "7728e4d415539a0f24e6f17aa7d22be00cc99d80",
+        "main_is_ancestor_of_dev": True,
+        "main_and_dev_same_tree": True,
+        "facman_consumed_pin": "5479939ca5cbc9ee0f901608a92012778b4752ae",
+        "journal_disk_compatibility": "read_v1_v2_write_v2",
+        "generic_process_runtime": False,
+        "daemon_or_service_runtime": False,
+        "ulu_maturity": "experimental",
+        "tags": 0,
+        "github_releases": 0,
+        "signed": False,
+        "published": False,
+    }
+    for field, value in expected_current.items():
+        if current.get(field) != value:
+            problems.append(f"session promotion current.{field} must be {value!r}")
 
     scope = data.get("scope", {})
     if not scope:

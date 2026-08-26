@@ -2,7 +2,7 @@
 
 Date: 13 August 2026
 
-State: `qualified_task_candidate_pending_dev_integration`
+State: `integrated_canonical_main_and_dev_synchronized`
 
 ## Exact candidate
 
@@ -15,9 +15,33 @@ session task parent     6a6e49336d66fb95ce6efce90d480d60f93e66ba
 main before promotion   1cafe4054297cc11e02458b83d230db0cd064471
 ```
 
-The exact current `dev` history contains `main` and the reviewed session task.
-No history was rewritten. This WorkUnit adds promotion truth and qualification
-evidence; it does not change journal behavior.
+At qualification time, the exact `dev` history contained `main` and the
+reviewed session task. No history was rewritten. This WorkUnit added promotion
+truth and qualification evidence; it did not change journal behavior.
+
+## Current closeout
+
+The original candidate identities and qualification below remain historical
+evidence. Protected integration subsequently completed with normal merge
+history:
+
+```text
+task evidence -> dev     e6de83ad1e1a2c646d31eb2ca68aa5cddb323b4a
+dev -> main              09f0639ab6529fba2f2aa22e9bf68e5eebed0553
+main -> dev              2e77e15c8bcdeb833a0a45aab3421886b72cc70c
+1.9.1 -> main            5479939ca5cbc9ee0f901608a92012778b4752ae
+1.9.1 main -> dev        5c2b6eb8ead53db863103a5190fa4fa130f64d42
+current shared tree      7728e4d415539a0f24e6f17aa7d22be00cc99d80
+```
+
+`main` is an ancestor of `dev`, and both protected refs project the same
+1.9.1 source tree. FacMan's separate adoption WorkUnit consumes exact canonical
+pin `5479939ca5cbc9ee0f901608a92012778b4752ae`.
+
+Public ABI remains 1.9. The journal reads v1/v2 disk records and writes v2.
+Generic process runtime, daemon/service execution, and stable `ulu` maturity
+remain outside the implemented surface. There is no ULK tag or GitHub release;
+the package remains experimental prerelease, unsigned, and unpublished.
 
 ## Qualified subset
 

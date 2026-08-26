@@ -7,19 +7,23 @@ Every new WorkUnit starts from an exact current `dev`, integrates through
 `task/* -> dev`, passes exact-SHA consumer canaries, and is promoted separately
 to canonical `main`. Consumer adoption remains a later exact-pin pull request.
 
-## ULK-SESSION-LAST-RUN-PROMOTION-01 (active promotion)
+## ULK-SESSION-LAST-RUN-PROMOTION-01 (complete)
 
-- Exact qualified session revision:
-  `dev@85df03b292c09a004352b5e66cc6fc4d9fabae51`.
-- Reconstruct and compare ABI, symbols, source mode, installed
-  static/shared/combined modes, relocated consumers, and interruption recovery.
-- Promote the bounded experimental session subset through reviewed `dev` to
-  `main`, then synchronize `dev` and leave FacMan repinning to its separate
-  adoption WorkUnit.
-- Add no process execution, daemon, dynamic provider, reference-store
-  expansion, Setup mutation, consumer adoption, signing, or publication.
+- Qualified task evidence entered `dev` through merge commit
+  `e6de83ad1e1a2c646d31eb2ca68aa5cddb323b4a`.
+- Reviewed `dev` reached canonical `main` through merge commit
+  `09f0639ab6529fba2f2aa22e9bf68e5eebed0553`, then returned to `dev`
+  through `2e77e15c8bcdeb833a0a45aab3421886b72cc70c`.
+- The 1.9.1 Last Run ordering/package truth reached canonical `main` through
+  `5479939ca5cbc9ee0f901608a92012778b4752ae`; synchronized
+  `dev@5c2b6eb8ead53db863103a5190fa4fa130f64d42` has the same tree.
+- FacMan separately adopted exact canonical pin
+  `5479939ca5cbc9ee0f901608a92012778b4752ae`.
+- ABI remains 1.9. The journal reads disk formats v1/v2 and writes v2.
+- No process execution, daemon/service runtime, stable public SPI, tag,
+  signing, or publication was introduced.
 
-## ULK-SESSION-LAST-RUN-SUBSET-01 (integrated on dev)
+## ULK-SESSION-LAST-RUN-SUBSET-01 (integrated and promoted)
 
 - Exact base: `dev@7d4fd8e25a8d529279c4ad18d983e9cd51839eb7`.
 - Add product-neutral session/operation/attempt identity, running and terminal
@@ -31,7 +35,7 @@ to canonical `main`. Consumer adoption remains a later exact-pin pull request.
 - Add no process execution, daemon, dynamic provider, Setup mutation, product
   terminology, consumer repin, signing, or publication authority.
 
-## ULK-CMAKE-SDK-PACKAGE-01 (integrated on dev)
+## ULK-CMAKE-SDK-PACKAGE-01 (canonical on main)
 
 - Exact base: `dev@719a3ec240831547071d69098e1fe8c76f327fb7`.
 - Package only the accepted ABI 1.8 and fixture-qualified contracts as
