@@ -30,7 +30,7 @@ def check_data(data: dict[str, Any]) -> list[str]:
     expected = {
         "schema": "universal_launcher.session_last_run_promotion.v1",
         "workunit": "ULK-SESSION-LAST-RUN-PROMOTION-01",
-        "status": "integrated_canonical_main_and_dev_synchronized",
+        "status": "integrated_with_historical_synchronization",
         "reviewed_on": "2026-08-13",
         "closed_on": "2026-08-26",
         "closeout_workunit": "ULK-1.9.1-CURRENT-TRUTH-CLOSEOUT-01",
@@ -93,13 +93,34 @@ def check_data(data: dict[str, Any]) -> list[str]:
         if qualification.get(field) != value:
             problems.append(f"session promotion qualification.{field} must be {value!r}")
 
-    current = data.get("current", {})
-    expected_current = {
+    historical = data.get("historical_synchronization", {})
+    expected_historical = {
+        "synchronized_on": "2026-08-20",
+        "evidence_role": "historical_1_9_1_synchronization",
         "canonical_main_revision": "5479939ca5cbc9ee0f901608a92012778b4752ae",
         "synchronized_dev_revision": "5c2b6eb8ead53db863103a5190fa4fa130f64d42",
         "shared_tree": "7728e4d415539a0f24e6f17aa7d22be00cc99d80",
         "main_is_ancestor_of_dev": True,
         "main_and_dev_same_tree": True,
+    }
+    for field, value in expected_historical.items():
+        if type(historical.get(field)) is not type(value) or historical.get(field) != value:
+            problems.append(f"session promotion historical_synchronization.{field} must be {value!r}")
+
+    # This record binds dated observations of exact commits, not moving refs or
+    # the source tree containing this checker. Documentation edits change that tree.
+    current = data.get("current", {})
+    expected_current = {
+        "observed_on": "2026-09-06",
+        "observation_kind": "local_remote_tracking_refs",
+        "evidence_role": "dated_branch_observation_not_candidate_or_future_ref_qualification",
+        "canonical_main_revision": "5479939ca5cbc9ee0f901608a92012778b4752ae",
+        "canonical_main_tree": "7728e4d415539a0f24e6f17aa7d22be00cc99d80",
+        "observed_dev_revision": "0e8bcc38f5a55c80974c41da8d2eac10ac703593",
+        "observed_dev_tree": "b28499daea1088504708691e794dbbbd59998f18",
+        "main_is_ancestor_of_dev": True,
+        "main_and_dev_same_tree": False,
+        "candidate_tree_equivalence": "not_claimed",
         "facman_consumed_pin": "5479939ca5cbc9ee0f901608a92012778b4752ae",
         "journal_disk_compatibility": "read_v1_v2_write_v2",
         "generic_process_runtime": False,
@@ -111,8 +132,10 @@ def check_data(data: dict[str, Any]) -> list[str]:
         "published": False,
     }
     for field, value in expected_current.items():
-        if current.get(field) != value:
+        if type(current.get(field)) is not type(value) or current.get(field) != value:
             problems.append(f"session promotion current.{field} must be {value!r}")
+    if set(current) != set(expected_current):
+        problems.append("session promotion current must enumerate exactly the dated observation fields")
 
     scope = data.get("scope", {})
     if not scope:

@@ -3,7 +3,7 @@
 
 schema = "universal_launcher.session_last_run_promotion.v1"
 workunit = "ULK-SESSION-LAST-RUN-PROMOTION-01"
-status = "integrated_canonical_main_and_dev_synchronized"
+status = "integrated_with_historical_synchronization"
 reviewed_on = "2026-08-13"
 closed_on = "2026-08-26"
 closeout_workunit = "ULK-1.9.1-CURRENT-TRUTH-CLOSEOUT-01"
@@ -69,12 +69,26 @@ required_skips = 0
 installed_sdk_modes = ["workspace", "static", "shared", "combined"]
 relocated_sdk_modes = ["static", "shared"]
 
-[current]
+[historical_synchronization]
+synchronized_on = "2026-08-20"
+evidence_role = "historical_1_9_1_synchronization"
 canonical_main_revision = "5479939ca5cbc9ee0f901608a92012778b4752ae"
 synchronized_dev_revision = "5c2b6eb8ead53db863103a5190fa4fa130f64d42"
 shared_tree = "7728e4d415539a0f24e6f17aa7d22be00cc99d80"
 main_is_ancestor_of_dev = true
 main_and_dev_same_tree = true
+
+[current]
+observed_on = "2026-09-06"
+observation_kind = "local_remote_tracking_refs"
+evidence_role = "dated_branch_observation_not_candidate_or_future_ref_qualification"
+canonical_main_revision = "5479939ca5cbc9ee0f901608a92012778b4752ae"
+canonical_main_tree = "7728e4d415539a0f24e6f17aa7d22be00cc99d80"
+observed_dev_revision = "0e8bcc38f5a55c80974c41da8d2eac10ac703593"
+observed_dev_tree = "b28499daea1088504708691e794dbbbd59998f18"
+main_is_ancestor_of_dev = true
+main_and_dev_same_tree = false
+candidate_tree_equivalence = "not_claimed"
 facman_consumed_pin = "5479939ca5cbc9ee0f901608a92012778b4752ae"
 journal_disk_compatibility = "read_v1_v2_write_v2"
 generic_process_runtime = false

@@ -146,9 +146,13 @@ the exact installed bytes. The package version remains separate from C ABI 1.9
 and the session subset's
 experimental prerelease contract maturity.
 
-Canonical provider source is `main@5479939ca5cbc9ee0f901608a92012778b4752ae`;
-`dev@5c2b6eb8ead53db863103a5190fa4fa130f64d42` contains that promotion and
-has the same source tree. FacMan consumes that canonical `main` revision.
+The 6 September 2026 local branch observations record canonical provider source
+at `main@5479939ca5cbc9ee0f901608a92012778b4752ae`. Observed
+`dev@0e8bcc38f5a55c80974c41da8d2eac10ac703593` contains that promotion but has
+a different tree after workspace-hygiene integration. FacMan consumes the
+recorded canonical `main` revision. The August 20 equal-tree synchronization is
+[historical evidence](docs/release/checkpoints/ulk-session-last-run-promotion-01.md).
+These observations do not qualify this task candidate or future branch heads.
 
 The current repository is an incremental production kernel. The authoritative
 command graph, Setup handoff, frontend-neutral client/transport ABI,

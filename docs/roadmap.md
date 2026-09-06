@@ -15,8 +15,12 @@ to canonical `main`. Consumer adoption remains a later exact-pin pull request.
   `09f0639ab6529fba2f2aa22e9bf68e5eebed0553`, then returned to `dev`
   through `2e77e15c8bcdeb833a0a45aab3421886b72cc70c`.
 - The 1.9.1 Last Run ordering/package truth reached canonical `main` through
-  `5479939ca5cbc9ee0f901608a92012778b4752ae`; synchronized
-  `dev@5c2b6eb8ead53db863103a5190fa4fa130f64d42` has the same tree.
+  `5479939ca5cbc9ee0f901608a92012778b4752ae`; the August 20 synchronization
+  at `dev@5c2b6eb8ead53db863103a5190fa4fa130f64d42` shared its tree.
+- The 6 September local observation of
+  `dev@0e8bcc38f5a55c80974c41da8d2eac10ac703593` still contains that `main`,
+  but its tree differs after workspace-hygiene work. Historical synchronization
+  does not establish tree equality for this edited candidate or future refs.
 - FacMan separately adopted exact canonical pin
   `5479939ca5cbc9ee0f901608a92012778b4752ae`.
 - ABI remains 1.9. The journal reads disk formats v1/v2 and writes v2.
